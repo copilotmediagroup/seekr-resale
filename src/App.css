@@ -4,62 +4,165 @@
 
 .app {
   min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 32px;
+  padding: 48px 32px;
   background:
-    radial-gradient(circle at 50% 15%, rgba(59, 130, 246, 0.12), transparent 35%),
+    radial-gradient(
+      circle at 50% 0%,
+      rgba(59, 130, 246, 0.12),
+      transparent 34%
+    ),
     #07090d;
   color: #f7f8fa;
 }
 
-.hero {
-  width: min(760px, 100%);
-  text-align: center;
+.hunterWorkspace {
+  width: min(1040px, 100%);
+  margin: 0 auto;
+}
+
+.workspaceHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 32px;
 }
 
 .brand {
-  margin-bottom: 28px;
+  margin-bottom: 34px;
+  color: #60a5fa;
   font-size: 14px;
   font-weight: 800;
   letter-spacing: 0.32em;
-  color: #60a5fa;
 }
 
-.hero h1 {
-  margin: 0;
-  font-size: clamp(42px, 7vw, 76px);
-  line-height: 0.98;
-  letter-spacing: -0.055em;
+.eyebrow,
+.cardLabel {
+  margin: 0 0 12px;
+  color: #6b7280;
+  font-size: 11px;
   font-weight: 700;
+  letter-spacing: 0.16em;
 }
 
-.hero p {
-  max-width: 650px;
-  margin: 28px auto 0;
+.workspaceHeader h1 {
+  margin: 0;
+  font-size: clamp(38px, 6vw, 64px);
+  line-height: 1;
+  letter-spacing: -0.045em;
+}
+
+.workspaceIntro {
+  max-width: 620px;
+  margin: 20px 0 0;
   color: #9ca3af;
-  font-size: 18px;
-  line-height: 1.65;
+  font-size: 17px;
+  line-height: 1.6;
 }
 
-.status {
-  width: fit-content;
-  margin: 38px auto 0;
+.hunterState {
+  flex: 0 0 auto;
   display: flex;
   align-items: center;
   gap: 9px;
+  margin-top: 48px;
   padding: 10px 14px;
-  border: 1px solid #20242c;
+  border: 1px solid #242933;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.035);
-  color: #c7cbd1;
+  color: #8b929e;
   font-size: 13px;
 }
 
-.statusDot {
+.hunterState .statusDot {
   width: 7px;
   height: 7px;
   border-radius: 50%;
+  background: #6b7280;
+}
+
+.hunterStateEnabled {
+  color: #d1fae5;
+}
+
+.hunterStateEnabled .statusDot {
   background: #22c55e;
+}
+
+.hunterFoundationCard {
+  margin-top: 64px;
+  display: flex;
+  justify-content: space-between;
+  gap: 40px;
+  padding: 32px;
+  border: 1px solid #20242c;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.hunterFoundationCard h2 {
+  margin: 0;
+  font-size: 24px;
+  letter-spacing: -0.025em;
+}
+
+.hunterFoundationCard p:not(.cardLabel) {
+  max-width: 620px;
+  margin: 12px 0 0;
+  color: #9299a5;
+  line-height: 1.6;
+}
+
+.hunterIdentity {
+  min-width: 220px;
+  padding: 16px;
+  border: 1px solid #20242c;
+  border-radius: 14px;
+  background: #0b0e13;
+}
+
+.hunterIdentity span {
+  display: block;
+  margin-bottom: 8px;
+  color: #6b7280;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.hunterIdentity strong {
+  display: block;
+  overflow-wrap: anywhere;
+  color: #d8dce3;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.workspaceStatus {
+  margin: 16px 4px 0;
+  color: #6f7783;
+  font-size: 12px;
+}
+
+@media (max-width: 720px) {
+  .app {
+    padding: 28px 20px;
+  }
+
+  .workspaceHeader,
+  .hunterFoundationCard {
+    flex-direction: column;
+  }
+
+  .hunterState {
+    margin-top: 0;
+  }
+
+  .hunterFoundationCard {
+    margin-top: 44px;
+  }
+
+  .hunterIdentity {
+    width: 100%;
+    min-width: 0;
+  }
 }
