@@ -166,3 +166,159 @@
     min-width: 0;
   }
 }
+
+.editorHeading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 32px;
+}
+
+.editorHeading > div > span,
+.editorPlaceholder > span {
+  display: block;
+  margin-bottom: 8px;
+  color: #60a5fa;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.editorHeading h2,
+.editorPlaceholder h2 {
+  margin: 0;
+  font-size: 32px;
+  letter-spacing: -0.035em;
+}
+
+.editorHeading p,
+.editorPlaceholder p {
+  max-width: 620px;
+  margin: 12px 0 0;
+  color: #8f96a3;
+  line-height: 1.6;
+}
+
+.enabledControl {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+  color: #c8ccd4;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.enabledControl input {
+  width: 20px;
+  height: 20px;
+  accent-color: #3b82f6;
+}
+
+.configurationPanel {
+  margin-top: 36px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.fieldGroupWide {
+  grid-column: 1 / -1;
+}
+
+.fieldGroup label {
+  color: #aeb4bf;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.fieldGroup input {
+  width: 100%;
+  border: 1px solid #262c36;
+  border-radius: 12px;
+  outline: none;
+  background: #0b0e13;
+  padding: 13px 14px;
+  color: #f4f6f8;
+  font: inherit;
+}
+
+.fieldGroup input:focus {
+  border-color: #3b82f6;
+}
+
+.inputWithSuffix {
+  position: relative;
+}
+
+.inputWithSuffix input {
+  padding-right: 64px;
+}
+
+.inputWithSuffix span {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  transform: translateY(-50%);
+  color: #697180;
+  font-size: 12px;
+  pointer-events: none;
+}
+
+.editorActions {
+  margin-top: 30px;
+  padding-top: 22px;
+  border-top: 1px solid #20252e;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.editorActions > span {
+  color: #737b88;
+  font-size: 12px;
+}
+
+.primaryButton {
+  border: 0;
+  border-radius: 11px;
+  background: #f4f6f8;
+  padding: 11px 18px;
+  color: #080a0e;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.primaryButton:hover {
+  background: #ffffff;
+}
+
+@media (max-width: 760px) {
+  .editorHeading,
+  .editorActions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .configurationPanel {
+    grid-template-columns: 1fr;
+  }
+
+  .fieldGroupWide {
+    grid-column: auto;
+  }
+
+  .primaryButton {
+    width: 100%;
+  }
+}
