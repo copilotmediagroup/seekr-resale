@@ -41,25 +41,3 @@ export interface Hunter {
   sources: MarketplaceSource[]
   thresholds: HunterThresholds
 }
-
-export const createDefaultHunter = (): Hunter => ({
-  id: 'hunter-1',
-  name: 'My Hunter',
-  enabled: true,
-
-  location: {
-    postalCode: '',
-    radiusMiles: null,
-  },
-
-  categories: [],
-  sources: [],
-
-  thresholds: {
-    minimumSpend: null,
-    maximumSpend: null,
-    minimumExpectedProfit: null,
-    minimumRoiPercent: null,
-    minimumSeekrScore: null,
-  },
-})
