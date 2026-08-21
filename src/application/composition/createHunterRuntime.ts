@@ -7,6 +7,8 @@ import type { VehicleMarketComparableQuery } from '../../domain/valuation/Vehicl
 import { AcquisitionVehicleMarketComparableProvider } from '../../infrastructure/analysis/acquisitionVehicleMarketComparableProvider'
 import { VehicleMarketResaleEstimateProvider } from '../../infrastructure/analysis/vehicleMarketResaleEstimateProvider'
 import { VehicleRepairEstimateProvider } from '../../infrastructure/analysis/vehicleRepairEstimateProvider'
+import { TransportDealEstimateProvider } from '../../infrastructure/analysis/transportDealEstimateProvider'
+import { UserControlledTransportEstimateProvider } from '../../infrastructure/analysis/userControlledTransportEstimateProvider'
 import {
   createUserMediatedDiscovery,
   type UserMediatedDiscoveryComposition,
@@ -56,6 +58,9 @@ export const createHunterRuntime = (): HunterRuntime => {
         combinedComparableProvider,
       ),
       new VehicleRepairEstimateProvider(),
+      new TransportDealEstimateProvider(
+        new UserControlledTransportEstimateProvider(),
+      ),
     ]),
   }
 }

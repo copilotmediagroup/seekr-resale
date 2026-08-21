@@ -284,6 +284,19 @@ const main = async (): Promise<void> => {
     `Expected exactly 4 remaining estimates, received ${evaluation.estimation.missing.length}.`,
   )
 
+  assert(
+    evaluation.estimation.estimates.estimatedTransportCost ===
+      null,
+    'Production runtime must not invent transport cost without a user-controlled quote.',
+  )
+
+  assert(
+    evaluation.estimation.missing.includes(
+      'estimatedTransportCost',
+    ),
+    'Production runtime must report transport cost missing when no user-controlled quote exists.',
+  )
+
   for (const field of [
     'estimatedTransportCost',
     'estimatedTaxesAndRegistration',
