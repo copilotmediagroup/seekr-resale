@@ -1,5 +1,6 @@
 import { DiscoveryService } from '../../application/discovery/discoveryService'
 import type { DiscoveryRequest } from '../../domain/discovery/DiscoveryRequest'
+import type { MarketplaceAcquisitionRequest } from '../../domain/discovery/MarketplaceAcquisitionRequest'
 import type {
   MarketplaceAcquisitionAdapter,
   MarketplaceAcquisitionContext,
@@ -30,7 +31,7 @@ class DeterministicAcquisitionAdapter
   }
 
   async acquire(
-    request: DiscoveryRequest,
+    request: MarketplaceAcquisitionRequest,
     context: MarketplaceAcquisitionContext,
   ): Promise<RawMarketplaceListing[]> {
     if (request.source !== this.source) {

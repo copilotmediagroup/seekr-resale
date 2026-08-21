@@ -5,6 +5,7 @@ import type {
 } from '../../domain/discovery/MarketplaceAcquisition'
 import type { MarketplaceProvider } from '../../domain/discovery/MarketplaceProvider'
 import type { RawMarketplaceListing } from '../../domain/discovery/RawMarketplaceListing'
+import { mapDiscoveryRequestToMarketplaceAcquisitionRequest } from './mapDiscoveryRequestToMarketplaceAcquisitionRequest'
 
 export type MarketplaceAcquisitionContextResolver = (
   request: DiscoveryRequest,
@@ -40,8 +41,11 @@ export class AcquisitionMarketplaceProvider
 
     const context = await this.resolveContext(request)
 
+    const acquisitionRequest =
+      mapDiscoveryRequestToMarketplaceAcquisitionRequest(request)
+
     const listings = await this.adapter.acquire(
-      request,
+      acquisitionRequest,
       context,
     )
 

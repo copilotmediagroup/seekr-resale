@@ -1,5 +1,5 @@
 import type { MarketplaceSource } from '../../domain/hunters/Hunter'
-import type { DiscoveryRequest } from '../../domain/discovery/DiscoveryRequest'
+import type { MarketplaceAcquisitionRequest } from '../../domain/discovery/MarketplaceAcquisitionRequest'
 import type {
   UserMediatedListingSubmission,
   UserMediatedSubmissionResolver,
@@ -35,10 +35,17 @@ export class InMemoryUserMediatedSubmissionStore {
   }
 
   resolve(
-    request: DiscoveryRequest,
+    request: MarketplaceAcquisitionRequest,
   ): UserMediatedListingSubmission | null {
+    if (request.correlationId === null) {
+      return null
+    }
+
     const submission = this.submissions.get(
-      createKey(request.hunterId, request.source),
+      createKey(
+        request.correlationId,
+        request.source,
+      ),
     )
 
     return submission

@@ -1,5 +1,6 @@
 import type { DiscoveryRequest } from '../../domain/discovery/DiscoveryRequest'
 import { UserMediatedMarketplaceAdapter } from './userMediatedMarketplaceAdapter'
+import { createMarketplaceAcquisitionRequestForTest } from './createMarketplaceAcquisitionRequestForTest'
 
 const request: DiscoveryRequest = {
   hunterId: 'hunter-user-mediated',
@@ -46,7 +47,7 @@ const adapter =
     async () => submission,
   )
 
-const results = await adapter.acquire(request, {
+const results = await adapter.acquire(createMarketplaceAcquisitionRequestForTest(request), {
   userAuthorized: true,
   userSessionAvailable: false,
 })
@@ -95,7 +96,7 @@ console.log(
 let unauthorizedRejected = false
 
 try {
-  await adapter.acquire(request, {
+  await adapter.acquire(createMarketplaceAcquisitionRequestForTest(request), {
     userAuthorized: false,
     userSessionAvailable: false,
   })
@@ -122,7 +123,7 @@ const emptyAdapter =
   )
 
 const emptyResults =
-  await emptyAdapter.acquire(request, {
+  await emptyAdapter.acquire(createMarketplaceAcquisitionRequestForTest(request), {
     userAuthorized: true,
     userSessionAvailable: false,
   })
@@ -151,7 +152,7 @@ const mismatchedAdapter =
 let mismatchRejected = false
 
 try {
-  await mismatchedAdapter.acquire(request, {
+  await mismatchedAdapter.acquire(createMarketplaceAcquisitionRequestForTest(request), {
     userAuthorized: true,
     userSessionAvailable: false,
   })

@@ -1,6 +1,7 @@
 import type { DiscoveryRequest } from '../../domain/discovery/DiscoveryRequest'
 import type { UserMediatedListingSubmission } from './userMediatedMarketplaceAdapter'
 import { InMemoryUserMediatedSubmissionStore } from './inMemoryUserMediatedSubmissionStore'
+import { createMarketplaceAcquisitionRequestForTest } from './createMarketplaceAcquisitionRequestForTest'
 
 const facebookRequest: DiscoveryRequest = {
   hunterId: 'hunter-alpha',
@@ -67,7 +68,7 @@ console.log(
   '===== SCENARIO 1 — MISSING SUBMISSION RETURNS NULL =====',
 )
 
-if (store.resolve(facebookRequest) !== null) {
+if (store.resolve(createMarketplaceAcquisitionRequestForTest(facebookRequest)) !== null) {
   throw new Error('Missing submission did not return null.')
 }
 
@@ -79,7 +80,7 @@ console.log(
 
 store.submit('hunter-alpha', facebookSubmission)
 
-const storedFacebook = store.resolve(facebookRequest)
+const storedFacebook = store.resolve(createMarketplaceAcquisitionRequestForTest(facebookRequest))
 
 if (
   storedFacebook?.listings[0]?.sourceListingId !==
@@ -88,13 +89,13 @@ if (
   throw new Error('Facebook submission was not resolved.')
 }
 
-if (store.resolve(craigslistRequest) !== null) {
+if (store.resolve(createMarketplaceAcquisitionRequestForTest(craigslistRequest)) !== null) {
   throw new Error(
     'Facebook submission leaked into Craigslist.',
   )
 }
 
-if (store.resolve(secondHunterRequest) !== null) {
+if (store.resolve(createMarketplaceAcquisitionRequestForTest(secondHunterRequest)) !== null) {
   throw new Error(
     'Submission leaked into another Hunter.',
   )
@@ -108,7 +109,7 @@ console.log(
 
 store.submit('hunter-alpha', replacementSubmission)
 
-const replaced = store.resolve(facebookRequest)
+const replaced = store.resolve(createMarketplaceAcquisitionRequestForTest(facebookRequest))
 
 if (
   replaced?.listings.length !== 1 ||
@@ -142,7 +143,7 @@ store.submit('hunter-beta', mutableInput)
 
 mutableInput.listings[0]!.title = 'Mutated outside store'
 
-const firstRead = store.resolve(secondHunterRequest)
+const firstRead = store.resolve(createMarketplaceAcquisitionRequestForTest(secondHunterRequest))
 
 if (
   firstRead?.listings[0]?.title !== 'Original title'
@@ -154,7 +155,7 @@ if (
 
 firstRead.listings[0]!.title = 'Mutated returned value'
 
-const secondRead = store.resolve(secondHunterRequest)
+const secondRead = store.resolve(createMarketplaceAcquisitionRequestForTest(secondHunterRequest))
 
 if (
   secondRead?.listings[0]?.title !== 'Original title'
@@ -173,7 +174,7 @@ console.log(
 store.submit('hunter-alpha', craigslistSubmission)
 
 if (
-  store.resolve(facebookRequest)?.listings[0]
+  store.resolve(createMarketplaceAcquisitionRequestForTest(facebookRequest))?.listings[0]
     ?.sourceListingId !== 'fb-002'
 ) {
   throw new Error(
@@ -182,7 +183,7 @@ if (
 }
 
 if (
-  store.resolve(craigslistRequest)?.listings[0]
+  store.resolve(createMarketplaceAcquisitionRequestForTest(craigslistRequest))?.listings[0]
     ?.sourceListingId !== 'cl-001'
 ) {
   throw new Error(
@@ -198,13 +199,13 @@ console.log(
 
 store.clear('hunter-alpha', 'facebook_marketplace')
 
-if (store.resolve(facebookRequest) !== null) {
+if (store.resolve(createMarketplaceAcquisitionRequestForTest(facebookRequest)) !== null) {
   throw new Error(
     'Target Facebook submission was not cleared.',
   )
 }
 
-if (store.resolve(craigslistRequest) === null) {
+if (store.resolve(createMarketplaceAcquisitionRequestForTest(craigslistRequest)) === null) {
   throw new Error(
     'Clearing Facebook incorrectly removed Craigslist.',
   )
@@ -220,15 +221,15 @@ store.submit('hunter-alpha', facebookSubmission)
 store.clearHunter('hunter-alpha')
 
 if (
-  store.resolve(facebookRequest) !== null ||
-  store.resolve(craigslistRequest) !== null
+  store.resolve(createMarketplaceAcquisitionRequestForTest(facebookRequest)) !== null ||
+  store.resolve(createMarketplaceAcquisitionRequestForTest(craigslistRequest)) !== null
 ) {
   throw new Error(
     'clearHunter did not remove every Hunter submission.',
   )
 }
 
-if (store.resolve(secondHunterRequest) === null) {
+if (store.resolve(createMarketplaceAcquisitionRequestForTest(secondHunterRequest)) === null) {
   throw new Error(
     'clearHunter removed another Hunter submission.',
   )
@@ -242,7 +243,7 @@ console.log(
 
 const resolver = store.createResolver()
 const resolvedThroughContract =
-  await resolver(secondHunterRequest)
+  await resolver(createMarketplaceAcquisitionRequestForTest(secondHunterRequest))
 
 if (
   resolvedThroughContract?.listings[0]

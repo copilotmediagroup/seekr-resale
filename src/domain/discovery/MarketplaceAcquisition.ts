@@ -1,5 +1,5 @@
 import type { MarketplaceSource } from '../hunters/Hunter'
-import type { DiscoveryRequest } from './DiscoveryRequest'
+import type { MarketplaceAcquisitionRequest } from './MarketplaceAcquisitionRequest'
 import type { RawMarketplaceListing } from './RawMarketplaceListing'
 
 export type MarketplaceAcquisitionMode =
@@ -32,7 +32,7 @@ export interface MarketplaceAcquisitionAdapter {
   readonly capability: MarketplaceAcquisitionCapability
 
   acquire(
-    request: DiscoveryRequest,
+    request: MarketplaceAcquisitionRequest,
     context: MarketplaceAcquisitionContext,
   ): Promise<RawMarketplaceListing[]>
 }

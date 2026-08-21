@@ -1,4 +1,4 @@
-import type { DiscoveryRequest } from './DiscoveryRequest'
+import type { MarketplaceAcquisitionRequest } from './MarketplaceAcquisitionRequest'
 import type {
   MarketplaceAcquisitionAdapter,
   MarketplaceAcquisitionContext,
@@ -20,7 +20,7 @@ class AssistedFacebookAcquisitionAdapter
   } as const
 
   async acquire(
-    request: DiscoveryRequest,
+    request: MarketplaceAcquisitionRequest,
     context: MarketplaceAcquisitionContext,
   ): Promise<RawMarketplaceListing[]> {
     if (request.source !== this.source) {
@@ -45,14 +45,16 @@ class AssistedFacebookAcquisitionAdapter
   }
 }
 
-const request: DiscoveryRequest = {
-  hunterId: 'hunter-acquisition-contract',
+const request: MarketplaceAcquisitionRequest = {
   source: 'facebook_marketplace',
   location: {
     postalCode: '33578',
-    radiusMiles: 50,
+    radiusMiles: 25,
+    locationText: null,
   },
-  categories: ['vehicles'],
+  categories: ['cars'],
+  vehicle: null,
+  correlationId: 'hunter-contract-test',
 }
 
 const adapter = new AssistedFacebookAcquisitionAdapter()

@@ -1,5 +1,5 @@
 import type { MarketplaceSource } from '../../domain/hunters/Hunter'
-import type { DiscoveryRequest } from '../../domain/discovery/DiscoveryRequest'
+import type { MarketplaceAcquisitionRequest } from '../../domain/discovery/MarketplaceAcquisitionRequest'
 import type {
   MarketplaceAcquisitionAdapter,
   MarketplaceAcquisitionCapability,
@@ -26,7 +26,7 @@ export interface UserMediatedListingSubmission {
 }
 
 export type UserMediatedSubmissionResolver = (
-  request: DiscoveryRequest,
+  request: MarketplaceAcquisitionRequest,
 ) =>
   | UserMediatedListingSubmission
   | null
@@ -64,7 +64,7 @@ export class UserMediatedMarketplaceAdapter
   }
 
   async acquire(
-    request: DiscoveryRequest,
+    request: MarketplaceAcquisitionRequest,
     context: MarketplaceAcquisitionContext,
   ): Promise<RawMarketplaceListing[]> {
     if (request.source !== this.source) {
