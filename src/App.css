@@ -933,3 +933,256 @@
     display: none;
   }
 }
+
+.thresholdSection {
+  margin-top: 22px;
+}
+
+.thresholdIntro {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 14px;
+  border: 1px solid #23334a;
+  border-radius: 12px;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(59, 130, 246, 0.09),
+      rgba(59, 130, 246, 0.015)
+    ),
+    #0a0e14;
+}
+
+.thresholdIntroMark {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid #31598d;
+  border-radius: 10px;
+  background: #10213a;
+  color: #72a7fa;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.thresholdIntro strong,
+.thresholdIntro span {
+  display: block;
+}
+
+.thresholdIntro strong {
+  color: #dce2ea;
+  font-size: 11px;
+}
+
+.thresholdIntro span {
+  margin-top: 4px;
+  color: #687382;
+  font-size: 9px;
+  line-height: 1.45;
+}
+
+.thresholdGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.thresholdField {
+  padding: 14px;
+  border: 1px solid #202731;
+  border-radius: 12px;
+  background: #090c11;
+}
+
+.thresholdFieldWide {
+  grid-column: 1 / -1;
+}
+
+.thresholdFieldHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 9px;
+}
+
+.thresholdFieldHeading label {
+  color: #aeb5bf;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.thresholdFieldHeading span {
+  color: #49525e;
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+}
+
+.thresholdInput {
+  position: relative;
+}
+
+.thresholdInput input {
+  width: 100%;
+  height: 42px;
+  border: 1px solid #252d38;
+  border-radius: 9px;
+  outline: none;
+  background: #070a0f;
+  padding: 0 12px;
+  color: #edf1f5;
+  font: inherit;
+  font-size: 12px;
+  transition: 150ms ease;
+}
+
+.thresholdInput input::placeholder {
+  color: #414a56;
+}
+
+.thresholdInput input:focus {
+  border-color: #3569ae;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.08);
+}
+
+.thresholdPrefix {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  z-index: 1;
+  transform: translateY(-50%);
+  color: #697482;
+  font-size: 11px;
+  pointer-events: none;
+}
+
+.thresholdPrefix + input {
+  padding-left: 28px;
+}
+
+.thresholdInputSuffix input {
+  padding-right: 34px;
+}
+
+.thresholdSuffix {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  color: #697482;
+  font-size: 10px;
+  font-weight: 800;
+  pointer-events: none;
+}
+
+.thresholdField small {
+  display: block;
+  margin-top: 7px;
+  color: #505966;
+  font-size: 8px;
+  line-height: 1.4;
+}
+
+.seekrScoreRow {
+  display: grid;
+  grid-template-columns: minmax(150px, 0.42fr) minmax(0, 1fr);
+  gap: 12px;
+  align-items: stretch;
+}
+
+.seekrScoreExplanation {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 4px;
+}
+
+.seekrScoreExplanation strong,
+.seekrScoreExplanation span {
+  display: block;
+}
+
+.seekrScoreExplanation strong {
+  color: #8993a0;
+  font-size: 9px;
+}
+
+.seekrScoreExplanation span {
+  margin-top: 3px;
+  color: #515a67;
+  font-size: 8px;
+  line-height: 1.45;
+}
+
+.thresholdSummary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 22px;
+  margin-top: 12px;
+  padding: 12px 14px;
+  border: 1px solid #1d242e;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.012);
+}
+
+.thresholdSummary > div {
+  flex: 0 0 auto;
+}
+
+.thresholdSummary span,
+.thresholdSummary strong {
+  display: block;
+}
+
+.thresholdSummary span {
+  color: #4d5663;
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 0.11em;
+}
+
+.thresholdSummary strong {
+  margin-top: 3px;
+  color: #7faeff;
+  font-size: 12px;
+}
+
+.thresholdSummary p {
+  max-width: 430px;
+  margin: 0;
+  color: #535d69;
+  font-size: 8px;
+  line-height: 1.45;
+  text-align: right;
+}
+
+@media (max-width: 620px) {
+  .thresholdGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .thresholdFieldWide {
+    grid-column: auto;
+  }
+
+  .seekrScoreRow {
+    grid-template-columns: 1fr;
+  }
+
+  .thresholdSummary {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .thresholdSummary p {
+    text-align: left;
+  }
+}

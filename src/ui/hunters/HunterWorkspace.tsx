@@ -10,6 +10,7 @@ import {
   addHunterSource,
   removeHunterCategory,
   removeHunterSource,
+  updateHunterThreshold,
 } from '../../domain/hunters/updateHunter'
 import type { HunterService } from '../../application/hunters/hunterService'
 
@@ -260,6 +261,22 @@ export function HunterWorkspace({ service }: HunterWorkspaceProps) {
             : removeHunterCategory(updatedHunter, category.id),
         current,
       )
+    })
+  }
+
+  function updateThreshold(
+    key: keyof Hunter['thresholds'],
+    rawValue: string,
+  ) {
+    setDraft((current) => {
+      if (!current) {
+        return current
+      }
+
+      const trimmed = rawValue.trim()
+      const value = trimmed === '' ? null : Number(trimmed)
+
+      return updateHunterThreshold(current, key, value)
     })
   }
 
@@ -690,6 +707,222 @@ export function HunterWorkspace({ service }: HunterWorkspaceProps) {
                               : 'ies'
                           }`}
                     </strong>
+                  </div>
+                </div>
+
+                <div className="sectionDivider" />
+
+                <div className="configurationHeading">
+                  <div>
+                    <span className="sectionNumber">04</span>
+                    <div>
+                      <h3>Deal requirements</h3>
+                      <p>
+                        Set the economics that matter to you. Every requirement
+                        is optional and entirely under your control.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="thresholdSection">
+                  <div className="thresholdIntro">
+                    <div className="thresholdIntroMark">USER</div>
+
+                    <div>
+                      <strong>Your strategy, your numbers.</strong>
+                      <span>
+                        Leave any field blank when you do not want SEEKR to
+                        filter opportunities by that requirement.
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="thresholdGrid">
+                    <div className="thresholdField">
+                      <div className="thresholdFieldHeading">
+                        <label htmlFor="minimum-spend">
+                          Minimum spend
+                        </label>
+                        <span>OPTIONAL</span>
+                      </div>
+
+                      <div className="thresholdInput">
+                        <span className="thresholdPrefix">$</span>
+                        <input
+                          id="minimum-spend"
+                          inputMode="decimal"
+                          min="0"
+                          onChange={(event) =>
+                            updateThreshold(
+                              'minimumSpend',
+                              event.target.value,
+                            )
+                          }
+                          placeholder="No minimum"
+                          type="number"
+                          value={draft.thresholds.minimumSpend ?? ''}
+                        />
+                      </div>
+
+                      <small>
+                        Ignore listings priced below this amount.
+                      </small>
+                    </div>
+
+                    <div className="thresholdField">
+                      <div className="thresholdFieldHeading">
+                        <label htmlFor="maximum-spend">
+                          Maximum spend
+                        </label>
+                        <span>OPTIONAL</span>
+                      </div>
+
+                      <div className="thresholdInput">
+                        <span className="thresholdPrefix">$</span>
+                        <input
+                          id="maximum-spend"
+                          inputMode="decimal"
+                          min="0"
+                          onChange={(event) =>
+                            updateThreshold(
+                              'maximumSpend',
+                              event.target.value,
+                            )
+                          }
+                          placeholder="No maximum"
+                          type="number"
+                          value={draft.thresholds.maximumSpend ?? ''}
+                        />
+                      </div>
+
+                      <small>
+                        Set the most you are willing to pay.
+                      </small>
+                    </div>
+
+                    <div className="thresholdField">
+                      <div className="thresholdFieldHeading">
+                        <label htmlFor="minimum-profit">
+                          Minimum expected profit
+                        </label>
+                        <span>OPTIONAL</span>
+                      </div>
+
+                      <div className="thresholdInput">
+                        <span className="thresholdPrefix">$</span>
+                        <input
+                          id="minimum-profit"
+                          inputMode="decimal"
+                          min="0"
+                          onChange={(event) =>
+                            updateThreshold(
+                              'minimumExpectedProfit',
+                              event.target.value,
+                            )
+                          }
+                          placeholder="Any profit"
+                          type="number"
+                          value={
+                            draft.thresholds.minimumExpectedProfit ?? ''
+                          }
+                        />
+                      </div>
+
+                      <small>
+                        Only surface deals meeting your profit target.
+                      </small>
+                    </div>
+
+                    <div className="thresholdField">
+                      <div className="thresholdFieldHeading">
+                        <label htmlFor="minimum-roi">
+                          Minimum ROI
+                        </label>
+                        <span>OPTIONAL</span>
+                      </div>
+
+                      <div className="thresholdInput thresholdInputSuffix">
+                        <input
+                          id="minimum-roi"
+                          inputMode="decimal"
+                          min="0"
+                          onChange={(event) =>
+                            updateThreshold(
+                              'minimumRoiPercent',
+                              event.target.value,
+                            )
+                          }
+                          placeholder="Any ROI"
+                          type="number"
+                          value={
+                            draft.thresholds.minimumRoiPercent ?? ''
+                          }
+                        />
+                        <span className="thresholdSuffix">%</span>
+                      </div>
+
+                      <small>
+                        Require at least this return on your investment.
+                      </small>
+                    </div>
+
+                    <div className="thresholdField thresholdFieldWide">
+                      <div className="thresholdFieldHeading">
+                        <label htmlFor="minimum-seekr-score">
+                          Minimum SEEKR score
+                        </label>
+                        <span>OPTIONAL</span>
+                      </div>
+
+                      <div className="seekrScoreRow">
+                        <div className="thresholdInput">
+                          <input
+                            id="minimum-seekr-score"
+                            inputMode="decimal"
+                            min="0"
+                            onChange={(event) =>
+                              updateThreshold(
+                                'minimumSeekrScore',
+                                event.target.value,
+                              )
+                            }
+                            placeholder="Any score"
+                            type="number"
+                            value={
+                              draft.thresholds.minimumSeekrScore ?? ''
+                            }
+                          />
+                        </div>
+
+                        <div className="seekrScoreExplanation">
+                          <strong>Opportunity quality filter</strong>
+                          <span>
+                            Set the minimum SEEKR intelligence score you want
+                            a deal to meet before it surfaces.
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="thresholdSummary">
+                    <div>
+                      <span>ACTIVE REQUIREMENTS</span>
+                      <strong>
+                        {
+                          Object.values(draft.thresholds).filter(
+                            (value) => value !== null,
+                          ).length
+                        }
+                        {' / 5'}
+                      </strong>
+                    </div>
+
+                    <p>
+                      Blank fields remain unrestricted. SEEKR does not insert
+                      its own financial limits into your Hunter.
+                    </p>
                   </div>
                 </div>
 
