@@ -356,6 +356,83 @@
   cursor: pointer;
 }
 
+.hunterStateButton {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  right: 65px;
+  min-width: 47px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 0 7px;
+  border: 1px solid rgba(148, 163, 184, 0.13);
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.055);
+  color: #788291;
+  font: inherit;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.055em;
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition:
+    transform 110ms ease,
+    border-color 150ms ease,
+    background 150ms ease,
+    color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.hunterStateButtonDot {
+  width: 5px;
+  height: 5px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: #687282;
+  transition:
+    background 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.hunterStateButton:hover {
+  border-color: rgba(148, 163, 184, 0.28);
+  background: rgba(148, 163, 184, 0.09);
+  color: #aeb7c4;
+}
+
+.hunterStateButtonEnabled {
+  border-color: rgba(74, 222, 128, 0.18);
+  background: rgba(74, 222, 128, 0.07);
+  color: #86efac;
+}
+
+.hunterStateButtonEnabled .hunterStateButtonDot {
+  background: #4ade80;
+  box-shadow: 0 0 7px rgba(74, 222, 128, 0.42);
+}
+
+.hunterStateButtonEnabled:hover {
+  border-color: rgba(74, 222, 128, 0.32);
+  background: rgba(74, 222, 128, 0.11);
+}
+
+.hunterStateButton:active {
+  transform: translateY(-50%) scale(0.91);
+}
+
+.hunterStateButton:focus-visible {
+  outline: none;
+  border-color: rgba(96, 165, 250, 0.58);
+  box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.1);
+}
+
+.hunterCardSelectWithManagementActions {
+  padding-right: 122px;
+}
+
 .hunterDuplicateButton {
   position: absolute;
   top: 50%;
@@ -1604,7 +1681,8 @@
   .marketplaceCard,
   .categoryCard,
   .hunterDuplicateButton,
-  .hunterRemoveButton {
+  .hunterRemoveButton,
+  .hunterStateButton {
     transition: none;
   }
 }

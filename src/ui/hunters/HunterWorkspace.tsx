@@ -10,6 +10,7 @@ import {
   addHunterSource,
   removeHunterCategory,
   removeHunterSource,
+  updateHunterEnabled,
   updateHunterThreshold,
 } from '../../domain/hunters/updateHunter'
 import type { HunterService } from '../../application/hunters/hunterService'
@@ -383,6 +384,59 @@ export function HunterWorkspace({ service }: HunterWorkspaceProps) {
     setDragOverHunterId(null)
   }
 
+  async function toggleHunterEnabled(id: string) {
+    const hunter = hunters.find((item) => item.id === id)
+
+    if (!hunter) {
+      return
+    }
+
+    const updated = updateHunterEnabled(hunter, !hunter.enabled)
+    const previousHunters = hunters
+    const previousDraft = draft
+
+    setHunters((current) =>
+      current.map((item) =>
+        item.id === id ? updated : item,
+      ),
+    )
+
+    if (selectedId === id) {
+      setDraft(updated)
+    }
+
+    setStatus(
+      updated.enabled
+        ? `Activating ${hunter.name || 'Hunter'}...`
+        : `Pausing ${hunter.name || 'Hunter'}...`,
+    )
+
+    try {
+      await service.saveHunter(updated)
+
+      const message = updated.enabled
+        ? 'Hunter activated'
+        : 'Hunter paused'
+
+      setStatus(message)
+      showToast(message)
+    } catch (error) {
+      setHunters(previousHunters)
+
+      if (selectedId === id) {
+        setDraft(previousDraft)
+      }
+
+      const message =
+        error instanceof Error
+          ? error.message
+          : 'Unable to update Hunter status'
+
+      setStatus(message)
+      showToast(message, 'error')
+    }
+  }
+
   function updateName(name: string) {
     setDraft((current) =>
       current ? { ...current, name } : current,
@@ -649,7 +703,7 @@ export function HunterWorkspace({ service }: HunterWorkspaceProps) {
                   )}
 
                   <button
-                    className="hunterCardSelect hunterCardSelectWithActions"
+                    className="hunterCardSelect hunterCardSelectWithManagementActions"
                     onClick={() => void selectHunter(hunter.id)}
                     type="button"
                   >
@@ -667,14 +721,24 @@ export function HunterWorkspace({ service }: HunterWorkspaceProps) {
                       </span>
                     </div>
 
-                    <span
-                      className={`hunterState ${
-                        hunter.enabled ? 'hunterStateEnabled' : ''
-                      }`}
-                    >
-                      <span />
-                      {hunter.enabled ? 'ON' : 'OFF'}
-                    </span>
+                  </button>
+
+                  <button
+                    aria-label={
+                      hunter.enabled
+                        ? `Pause ${hunter.name || 'Hunter'}`
+                        : `Activate ${hunter.name || 'Hunter'}`
+                    }
+                    aria-pressed={hunter.enabled}
+                    className={`hunterStateButton ${
+                      hunter.enabled ? 'hunterStateButtonEnabled' : ''
+                    }`}
+                    onClick={() => void toggleHunterEnabled(hunter.id)}
+                    title={hunter.enabled ? 'Pause Hunter' : 'Activate Hunter'}
+                    type="button"
+                  >
+                    <span className="hunterStateButtonDot" />
+                    <span>{hunter.enabled ? 'ON' : 'OFF'}</span>
                   </button>
 
                   <button
