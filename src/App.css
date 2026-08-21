@@ -189,6 +189,49 @@
   padding: 10px;
 }
 
+.newHunterButton {
+  width: calc(100% - 40px);
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin: 0 20px 16px;
+  padding: 9px 12px;
+  border: 1px solid #26354c;
+  border-radius: 9px;
+  background: rgba(59, 130, 246, 0.07);
+  color: #a9c9ff;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition:
+    background 140ms ease,
+    border-color 140ms ease,
+    color 140ms ease,
+    transform 140ms ease;
+}
+
+.newHunterButton:hover {
+  border-color: #34527d;
+  background: rgba(59, 130, 246, 0.12);
+  color: #d3e3ff;
+  transform: translateY(-1px);
+}
+
+.newHunterButton:active {
+  transform: translateY(0);
+}
+
+.newHunterButton > span {
+  color: #5e9cff;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1;
+}
+
 .hunterCard {
   width: 100%;
   display: flex;
@@ -1185,4 +1228,43 @@
   .thresholdSummary p {
     text-align: left;
   }
+}
+
+.newHunterButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 38px;
+  padding: 0 13px;
+  border: 1px solid rgba(96, 165, 250, 0.28);
+  border-radius: 10px;
+  background: rgba(59, 130, 246, 0.08);
+  color: #dbeafe;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    transform 160ms ease;
+}
+
+.newHunterButton span {
+  color: #60a5fa;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.newHunterButton:hover {
+  border-color: rgba(96, 165, 250, 0.55);
+  background: rgba(59, 130, 246, 0.14);
+  transform: translateY(-1px);
+}
+
+.newHunterButton:active {
+  transform: translateY(0);
 }

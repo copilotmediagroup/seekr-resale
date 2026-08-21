@@ -158,6 +158,34 @@ export function HunterWorkspace({ service }: HunterWorkspaceProps) {
     setStatus(`Editing ${hunter.name}`)
   }
 
+  async function createNewHunter() {
+    const id = `hunter-${Date.now()}`
+
+    const hunter = createHunter({
+      id,
+      name: `Hunter ${hunters.length + 1}`,
+    })
+
+    setStatus('Creating Hunter...')
+
+    try {
+      await service.saveHunter(hunter)
+
+      const refreshed = await service.listHunters()
+
+      setHunters(refreshed)
+      setSelectedId(hunter.id)
+      setDraft(hunter)
+      setStatus('New Hunter ready')
+    } catch (error) {
+      setStatus(
+        error instanceof Error
+          ? error.message
+          : 'Unable to create Hunter',
+      )
+    }
+  }
+
   function updateName(name: string) {
     setDraft((current) =>
       current ? { ...current, name } : current,
@@ -350,6 +378,15 @@ export function HunterWorkspace({ service }: HunterWorkspaceProps) {
                 <span className="panelEyebrow">YOUR HUNTERS</span>
                 <strong>{hunters.length}</strong>
               </div>
+
+              <button
+                className="newHunterButton"
+                onClick={() => void createNewHunter()}
+                type="button"
+              >
+                <span>+</span>
+                New Hunter
+              </button>
             </div>
 
             <div className="hunterList">
@@ -389,8 +426,8 @@ export function HunterWorkspace({ service }: HunterWorkspaceProps) {
             </div>
 
             <div className="listFooter">
-              More Hunter management controls will be added after the
-              configuration workflow is validated.
+              Create separate Hunters for different markets, categories,
+              locations, and resale strategies.
             </div>
           </aside>
 
