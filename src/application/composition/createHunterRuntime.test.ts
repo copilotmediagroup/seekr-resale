@@ -56,7 +56,7 @@ const main = async (): Promise<void> => {
             trim: null,
             mileage: 150000,
             vin: null,
-            condition: 'Good',
+            condition: 'Runs great, no mechanical issues',
           },
           locationText: '  Tampa, FL  ',
           postedAt: '2026-08-20T12:00:00.000Z',
@@ -84,7 +84,7 @@ const main = async (): Promise<void> => {
             trim: null,
             mileage: 150000,
             vin: null,
-            condition: 'Good',
+            condition: 'Runs great, no mechanical issues',
           },
           locationText: 'Tampa, FL',
           postedAt: '2026-08-20T12:00:00.000Z',
@@ -261,12 +261,30 @@ const main = async (): Promise<void> => {
   )
 
   assert(
-    evaluation.estimation.missing.length === 5,
-    `Expected exactly 5 remaining estimates, received ${evaluation.estimation.missing.length}.`,
+    evaluation.estimation.estimates.estimatedRepairCost
+      ?.amount === 0,
+    'Production runtime did not derive zero known repair cost from clean condition evidence.',
+  )
+
+  assert(
+    evaluation.estimation.estimates.estimatedRepairCost
+      ?.origin === 'automated',
+    'Production repair estimate did not preserve automated provenance.',
+  )
+
+  assert(
+    !evaluation.estimation.missing.includes(
+      'estimatedRepairCost',
+    ),
+    'Estimated repair cost remained incorrectly marked missing.',
+  )
+
+  assert(
+    evaluation.estimation.missing.length === 4,
+    `Expected exactly 4 remaining estimates, received ${evaluation.estimation.missing.length}.`,
   )
 
   for (const field of [
-    'estimatedRepairCost',
     'estimatedTransportCost',
     'estimatedTaxesAndRegistration',
     'estimatedTransactionFees',
