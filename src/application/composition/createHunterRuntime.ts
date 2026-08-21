@@ -9,6 +9,8 @@ import { VehicleMarketResaleEstimateProvider } from '../../infrastructure/analys
 import { VehicleRepairEstimateProvider } from '../../infrastructure/analysis/vehicleRepairEstimateProvider'
 import { TaxesAndRegistrationDealEstimateProvider } from '../../infrastructure/analysis/taxesAndRegistrationDealEstimateProvider'
 import { UserControlledTaxesAndRegistrationEstimateProvider } from '../../infrastructure/analysis/userControlledTaxesAndRegistrationEstimateProvider'
+import { TransactionFeeDealEstimateProvider } from '../../infrastructure/analysis/transactionFeeDealEstimateProvider'
+import { UserControlledTransactionFeeEstimateProvider } from '../../infrastructure/analysis/userControlledTransactionFeeEstimateProvider'
 import { TransportDealEstimateProvider } from '../../infrastructure/analysis/transportDealEstimateProvider'
 import { UserControlledTransportEstimateProvider } from '../../infrastructure/analysis/userControlledTransportEstimateProvider'
 import {
@@ -65,6 +67,9 @@ export const createHunterRuntime = (): HunterRuntime => {
       ),
       new TaxesAndRegistrationDealEstimateProvider(
         new UserControlledTaxesAndRegistrationEstimateProvider(),
+      ),
+      new TransactionFeeDealEstimateProvider(
+        new UserControlledTransactionFeeEstimateProvider(),
       ),
     ]),
   }
