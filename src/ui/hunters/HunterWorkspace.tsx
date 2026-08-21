@@ -95,6 +95,29 @@ export function HunterWorkspace({ service }: HunterWorkspaceProps) {
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [draft, setDraft] = useState<Hunter | null>(null)
   const [status, setStatus] = useState('Loading Hunters...')
+  const [toast, setToast] = useState<{
+    message: string
+    tone: 'success' | 'error'
+  } | null>(null)
+
+  function showToast(
+    message: string,
+    tone: 'success' | 'error' = 'success',
+  ) {
+    setToast({ message, tone })
+  }
+
+  useEffect(() => {
+    if (!toast) {
+      return
+    }
+
+    const timeout = window.setTimeout(() => {
+      setToast(null)
+    }, 2600)
+
+    return () => window.clearTimeout(timeout)
+  }, [toast])
 
   useEffect(() => {
     let active = true
@@ -177,18 +200,67 @@ export function HunterWorkspace({ service }: HunterWorkspaceProps) {
       setSelectedId(hunter.id)
       setDraft(hunter)
       setStatus('New Hunter ready')
+      showToast('Hunter created')
     } catch (error) {
-      setStatus(
+      const message =
         error instanceof Error
           ? error.message
-          : 'Unable to create Hunter',
-      )
+          : 'Unable to create Hunter'
+
+      setStatus(message)
+      showToast(message, 'error')
+    }
+  }
+
+  async function duplicateHunter(id: string) {
+    const source = await service.getHunter(id)
+
+    if (!source) {
+      const message = 'Unable to find Hunter to duplicate'
+      setStatus(message)
+      showToast(message, 'error')
+      return
+    }
+
+    const duplicate = createHunter({
+      id: `hunter-${Date.now()}`,
+      name: `${source.name || 'Untitled Hunter'} Copy`,
+    })
+
+    duplicate.enabled = source.enabled
+    duplicate.location = { ...source.location }
+    duplicate.categories = [...source.categories]
+    duplicate.sources = [...source.sources]
+    duplicate.thresholds = { ...source.thresholds }
+
+    setStatus(`Duplicating ${source.name || 'Hunter'}...`)
+
+    try {
+      await service.saveHunter(duplicate)
+
+      const refreshed = await service.listHunters()
+
+      setHunters(refreshed)
+      setSelectedId(duplicate.id)
+      setDraft(duplicate)
+      setStatus(`${duplicate.name} ready`)
+      showToast('Hunter duplicated')
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : 'Unable to duplicate Hunter'
+
+      setStatus(message)
+      showToast(message, 'error')
     }
   }
 
   async function removeHunter(id: string) {
     if (hunters.length <= 1) {
-      setStatus('At least one Hunter is required')
+      const message = 'At least one Hunter is required'
+      setStatus(message)
+      showToast(message, 'error')
       return
     }
 
@@ -230,12 +302,15 @@ export function HunterWorkspace({ service }: HunterWorkspaceProps) {
       }
 
       setStatus(`${hunter.name || 'Hunter'} removed`)
+      showToast('Hunter removed')
     } catch (error) {
-      setStatus(
+      const message =
         error instanceof Error
           ? error.message
-          : 'Unable to remove Hunter',
-      )
+          : 'Unable to remove Hunter'
+
+      setStatus(message)
+      showToast(message, 'error')
     }
   }
 
@@ -379,17 +454,35 @@ export function HunterWorkspace({ service }: HunterWorkspaceProps) {
       setSelectedId(saved.id)
       setDraft(saved)
       setStatus('Hunter saved')
+      showToast('Hunter saved')
     } catch (error) {
-      setStatus(
+      const message =
         error instanceof Error
           ? error.message
-          : 'Unable to save Hunter',
-      )
+          : 'Unable to save Hunter'
+
+      setStatus(message)
+      showToast(message, 'error')
     }
   }
 
   return (
     <main className="workspace">
+      {toast && (
+        <div
+          aria-live="polite"
+          className={`seekrToast ${
+            toast.tone === 'error' ? 'seekrToastError' : 'seekrToastSuccess'
+          }`}
+          role="status"
+        >
+          <span className="seekrToastIcon">
+            {toast.tone === 'error' ? '!' : '✓'}
+          </span>
+
+          <span>{toast.message}</span>
+        </div>
+      )}
       <div className="shell">
         <header className="topbar">
           <div className="brandBlock">
@@ -451,7 +544,7 @@ export function HunterWorkspace({ service }: HunterWorkspaceProps) {
                   key={hunter.id}
                 >
                   <button
-                    className="hunterCardSelect"
+                    className="hunterCardSelect hunterCardSelectWithActions"
                     onClick={() => void selectHunter(hunter.id)}
                     type="button"
                   >
@@ -477,6 +570,16 @@ export function HunterWorkspace({ service }: HunterWorkspaceProps) {
                       <span />
                       {hunter.enabled ? 'ON' : 'OFF'}
                     </span>
+                  </button>
+
+                  <button
+                    aria-label={`Duplicate ${hunter.name || 'Hunter'}`}
+                    className="hunterDuplicateButton"
+                    onClick={() => void duplicateHunter(hunter.id)}
+                    title="Duplicate Hunter"
+                    type="button"
+                  >
+                    ⧉
                   </button>
 
                   {hunters.length > 1 && (

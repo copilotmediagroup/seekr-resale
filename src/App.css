@@ -263,6 +263,53 @@
   cursor: pointer;
 }
 
+.hunterDuplicateButton {
+  position: absolute;
+  top: 50%;
+  right: 37px;
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  background: transparent;
+  color: #59616d;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  opacity: 0;
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition:
+    opacity 140ms ease,
+    color 140ms ease,
+    border-color 140ms ease,
+    background 140ms ease;
+}
+
+.hunterCard:hover .hunterDuplicateButton,
+.hunterDuplicateButton:focus-visible {
+  opacity: 1;
+}
+
+.hunterDuplicateButton:hover {
+  border-color: rgba(96, 165, 250, 0.28);
+  background: rgba(96, 165, 250, 0.08);
+  color: #93c5fd;
+}
+
+.hunterDuplicateButton:focus-visible {
+  outline: none;
+  border-color: rgba(96, 165, 250, 0.5);
+}
+
+.hunterCardSelectWithActions {
+  padding-right: 66px;
+}
+
 .hunterRemoveButton {
   position: absolute;
   top: 50%;
@@ -1322,4 +1369,149 @@
 
 .newHunterButton:active {
   transform: translateY(0);
+}
+
+
+/* =========================================================
+   SEEKR PREMIUM INTERACTION FEEDBACK
+========================================================= */
+
+.primaryButton,
+.newHunterButton,
+.hunterCardSelect,
+.marketplaceCard,
+.categoryCard,
+.hunterDuplicateButton,
+.hunterRemoveButton {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.primaryButton,
+.hunterCardSelect,
+.marketplaceCard,
+.categoryCard {
+  transition:
+    transform 110ms ease,
+    background 140ms ease,
+    border-color 140ms ease,
+    color 140ms ease,
+    box-shadow 140ms ease;
+}
+
+.primaryButton:active,
+.hunterCardSelect:active,
+.marketplaceCard:active,
+.categoryCard:active {
+  transform: translateY(1px) scale(0.992);
+}
+
+.newHunterButton:active {
+  transform: translateY(1px) scale(0.992);
+}
+
+.hunterDuplicateButton:active,
+.hunterRemoveButton:active {
+  transform: translateY(-50%) scale(0.9);
+}
+
+.primaryButton:focus-visible,
+.newHunterButton:focus-visible,
+.hunterCardSelect:focus-visible,
+.marketplaceCard:focus-visible,
+.categoryCard:focus-visible {
+  outline: 2px solid rgba(96, 165, 250, 0.58);
+  outline-offset: 2px;
+}
+
+.seekrToast {
+  position: fixed;
+  top: 22px;
+  right: 22px;
+  z-index: 1000;
+  min-width: 210px;
+  max-width: min(360px, calc(100vw - 32px));
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  background: rgba(15, 18, 24, 0.96);
+  box-shadow:
+    0 16px 44px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.035);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  color: #e8ebef;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: -0.005em;
+  animation: seekrToastIn 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  pointer-events: none;
+}
+
+.seekrToastIcon {
+  width: 21px;
+  height: 21px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.seekrToastSuccess {
+  border-color: rgba(74, 222, 128, 0.18);
+}
+
+.seekrToastSuccess .seekrToastIcon {
+  background: rgba(74, 222, 128, 0.11);
+  color: #86efac;
+}
+
+.seekrToastError {
+  border-color: rgba(248, 113, 113, 0.2);
+}
+
+.seekrToastError .seekrToastIcon {
+  background: rgba(248, 113, 113, 0.1);
+  color: #fca5a5;
+}
+
+@keyframes seekrToastIn {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -7px, 0) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@media (max-width: 640px) {
+  .seekrToast {
+    top: 14px;
+    right: 14px;
+    left: 14px;
+    max-width: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .seekrToast {
+    animation: none;
+  }
+
+  .primaryButton,
+  .newHunterButton,
+  .hunterCardSelect,
+  .marketplaceCard,
+  .categoryCard,
+  .hunterDuplicateButton,
+  .hunterRemoveButton {
+    transition: none;
+  }
 }
