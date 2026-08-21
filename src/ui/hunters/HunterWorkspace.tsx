@@ -186,6 +186,59 @@ export function HunterWorkspace({ service }: HunterWorkspaceProps) {
     }
   }
 
+  async function removeHunter(id: string) {
+    if (hunters.length <= 1) {
+      setStatus('At least one Hunter is required')
+      return
+    }
+
+    const hunter = hunters.find((item) => item.id === id)
+
+    if (!hunter) {
+      return
+    }
+
+    const confirmed = window.confirm(
+      `Remove "${hunter.name || 'Untitled Hunter'}"? This cannot be undone.`,
+    )
+
+    if (!confirmed) {
+      return
+    }
+
+    const removedIndex = hunters.findIndex((item) => item.id === id)
+
+    setStatus(`Removing ${hunter.name || 'Hunter'}...`)
+
+    try {
+      await service.deleteHunter(id)
+
+      const refreshed = await service.listHunters()
+
+      setHunters(refreshed)
+
+      if (selectedId === id) {
+        const nextIndex = Math.min(
+          Math.max(removedIndex, 0),
+          refreshed.length - 1,
+        )
+
+        const nextHunter = refreshed[nextIndex] ?? refreshed[0] ?? null
+
+        setSelectedId(nextHunter?.id ?? null)
+        setDraft(nextHunter)
+      }
+
+      setStatus(`${hunter.name || 'Hunter'} removed`)
+    } catch (error) {
+      setStatus(
+        error instanceof Error
+          ? error.message
+          : 'Unable to remove Hunter',
+      )
+    }
+  }
+
   function updateName(name: string) {
     setDraft((current) =>
       current ? { ...current, name } : current,
@@ -391,37 +444,53 @@ export function HunterWorkspace({ service }: HunterWorkspaceProps) {
 
             <div className="hunterList">
               {hunters.map((hunter) => (
-                <button
+                <div
                   className={`hunterCard ${
                     selectedId === hunter.id ? 'hunterCardActive' : ''
                   }`}
                   key={hunter.id}
-                  onClick={() => void selectHunter(hunter.id)}
-                  type="button"
                 >
-                  <div className="hunterCardMain">
-                    <span className="hunterCardName">
-                      {hunter.name || 'Untitled Hunter'}
-                    </span>
-
-                    <span className="hunterCardMeta">
-                      {hunter.location.postalCode || 'Location not set'}
-                      {' · '}
-                      {hunter.location.radiusMiles === null
-                        ? 'Any radius'
-                        : `${hunter.location.radiusMiles} mi`}
-                    </span>
-                  </div>
-
-                  <span
-                    className={`hunterState ${
-                      hunter.enabled ? 'hunterStateEnabled' : ''
-                    }`}
+                  <button
+                    className="hunterCardSelect"
+                    onClick={() => void selectHunter(hunter.id)}
+                    type="button"
                   >
-                    <span />
-                    {hunter.enabled ? 'ON' : 'OFF'}
-                  </span>
-                </button>
+                    <div className="hunterCardMain">
+                      <span className="hunterCardName">
+                        {hunter.name || 'Untitled Hunter'}
+                      </span>
+
+                      <span className="hunterCardMeta">
+                        {hunter.location.postalCode || 'Location not set'}
+                        {' · '}
+                        {hunter.location.radiusMiles === null
+                          ? 'Any radius'
+                          : `${hunter.location.radiusMiles} mi`}
+                      </span>
+                    </div>
+
+                    <span
+                      className={`hunterState ${
+                        hunter.enabled ? 'hunterStateEnabled' : ''
+                      }`}
+                    >
+                      <span />
+                      {hunter.enabled ? 'ON' : 'OFF'}
+                    </span>
+                  </button>
+
+                  {hunters.length > 1 && (
+                    <button
+                      aria-label={`Remove ${hunter.name || 'Hunter'}`}
+                      className="hunterRemoveButton"
+                      onClick={() => void removeHunter(hunter.id)}
+                      title="Remove Hunter"
+                      type="button"
+                    >
+                      ×
+                    </button>
+                  )}
+                </div>
               ))}
             </div>
 
