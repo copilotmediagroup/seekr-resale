@@ -8,6 +8,15 @@ const raw: RawMarketplaceListing = {
   title: '  2012 Toyota Camry  ',
   description: '  Runs and drives.  ',
   askingPrice: 2400,
+  vehicle: {
+    year: 2012,
+    make: '  Toyota  ',
+    model: '  Camry  ',
+    trim: '  LE  ',
+    mileage: 145000,
+    vin: '  4T1BF1FK0CU123456  ',
+    condition: '  Good  ',
+  },
   locationText: '  Tampa, FL  ',
   postedAt: '2026-08-17T13:00:00.000Z',
   discoveredAt: '2026-08-21T13:00:00.000Z',
@@ -47,6 +56,18 @@ if (normalized.askingPrice !== 2400) {
   throw new Error('Asking price was not preserved')
 }
 
+if (
+  normalized.vehicle?.year !== 2012 ||
+  normalized.vehicle.make !== 'Toyota' ||
+  normalized.vehicle.model !== 'Camry' ||
+  normalized.vehicle.trim !== 'LE' ||
+  normalized.vehicle.mileage !== 145000 ||
+  normalized.vehicle.vin !== '4T1BF1FK0CU123456' ||
+  normalized.vehicle.condition !== 'Good'
+) {
+  throw new Error('Vehicle metadata was not normalized correctly')
+}
+
 if (normalized.postedAt !== raw.postedAt) {
   throw new Error('Posted timestamp was not preserved')
 }
@@ -67,6 +88,7 @@ const sparse = normalizeMarketplaceListing({
   sourceListingId: 'listing-456',
   description: '   ',
   askingPrice: null,
+  vehicle: null,
   locationText: '   ',
   postedAt: null,
 })
@@ -85,6 +107,10 @@ if (sparse.locationText !== null) {
 
 if (sparse.askingPrice !== null) {
   throw new Error('Unknown asking price should remain null')
+}
+
+if (sparse.vehicle !== null) {
+  throw new Error('Unknown vehicle metadata should remain null')
 }
 
 if (sparse.listingAgeDays !== null) {

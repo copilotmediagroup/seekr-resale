@@ -6,6 +6,7 @@ import type {
   MarketplaceAcquisitionContext,
 } from '../../domain/discovery/MarketplaceAcquisition'
 import type { RawMarketplaceListing } from '../../domain/discovery/RawMarketplaceListing'
+import type { VehicleListingMetadata } from '../../domain/discovery/VehicleListingMetadata'
 
 export interface UserSubmittedMarketplaceListing {
   sourceListingId: string
@@ -13,6 +14,7 @@ export interface UserSubmittedMarketplaceListing {
   title: string
   description?: string | null
   askingPrice?: number | null
+  vehicle?: VehicleListingMetadata | null
   locationText?: string | null
   postedAt?: string | null
 }
@@ -98,6 +100,9 @@ export class UserMediatedMarketplaceAdapter
         title: listing.title,
         description: listing.description ?? null,
         askingPrice: listing.askingPrice ?? null,
+        vehicle: listing.vehicle
+          ? { ...listing.vehicle }
+          : null,
         locationText: listing.locationText ?? null,
         postedAt: listing.postedAt ?? null,
         discoveredAt: submission.submittedAt,

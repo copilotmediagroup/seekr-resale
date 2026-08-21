@@ -17,6 +17,7 @@ const createListing = (
   title,
   description: null,
   askingPrice: 2000,
+      vehicle: null,
   locationText: 'Tampa, FL',
   postedAt: '2026-08-20T12:00:00.000Z',
   discoveredAt: '2026-08-21T13:00:00.000Z',

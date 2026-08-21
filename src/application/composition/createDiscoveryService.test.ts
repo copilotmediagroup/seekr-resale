@@ -34,6 +34,7 @@ const listing: RawMarketplaceListing = {
   title: '2010 Toyota Corolla',
   description: 'Runs well.',
   askingPrice: 3200,
+      vehicle: null,
   locationText: 'Tampa, FL',
   postedAt: '2026-08-20T12:00:00.000Z',
   discoveredAt: '2026-08-21T12:00:00.000Z',

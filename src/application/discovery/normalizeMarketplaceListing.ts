@@ -57,6 +57,17 @@ export const normalizeMarketplaceListing = (
   description: normalizeOptionalText(raw.description),
 
   askingPrice: raw.askingPrice,
+  vehicle: raw.vehicle
+    ? {
+        year: raw.vehicle.year,
+        make: normalizeOptionalText(raw.vehicle.make),
+        model: normalizeOptionalText(raw.vehicle.model),
+        trim: normalizeOptionalText(raw.vehicle.trim),
+        mileage: raw.vehicle.mileage,
+        vin: normalizeOptionalText(raw.vehicle.vin),
+        condition: normalizeOptionalText(raw.vehicle.condition),
+      }
+    : null,
   locationText: normalizeOptionalText(raw.locationText),
 
   postedAt: raw.postedAt,

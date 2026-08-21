@@ -42,6 +42,7 @@ const listing = {
   title: '2008 Mazda3',
   description: 'Test listing',
   askingPrice: 2500,
+  vehicle: null,
   locationText: 'Tampa, FL',
   latitude: null,
   longitude: null,

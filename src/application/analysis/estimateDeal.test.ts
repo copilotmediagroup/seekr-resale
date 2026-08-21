@@ -44,6 +44,7 @@ const listing: NormalizedListing = {
   title: '2012 Toyota Camry',
   description: 'Runs and drives.',
   askingPrice: 5000,
+  vehicle: null,
   locationText: 'Tampa, FL',
   postedAt: '2026-08-07T13:00:00.000Z',
   discoveredAt: '2026-08-21T13:00:00.000Z',

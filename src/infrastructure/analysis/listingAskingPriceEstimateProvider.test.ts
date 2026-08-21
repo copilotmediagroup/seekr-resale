@@ -33,6 +33,7 @@ const createListing = (
   title: '2012 Toyota Camry',
   description: 'Runs and drives.',
   askingPrice,
+  vehicle: null,
   locationText: 'Tampa, FL',
   postedAt: '2026-08-20T12:00:00.000Z',
   discoveredAt: '2026-08-21T12:00:00.000Z',

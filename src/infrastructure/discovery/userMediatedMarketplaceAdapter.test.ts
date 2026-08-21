@@ -21,6 +21,15 @@ const submission = {
       title: '2008 Mazda3',
       description: 'Runs and drives',
       askingPrice: 2900,
+      vehicle: {
+        year: 2008,
+        make: 'Mazda',
+        model: 'Mazda3',
+        trim: null,
+        mileage: 126000,
+        vin: null,
+        condition: 'Used',
+      },
       locationText: 'Tampa, FL',
       postedAt: '2026-08-18T16:30:00.000Z',
     },
@@ -54,6 +63,17 @@ if (
 ) {
   throw new Error(
     'User-submitted listing identity was not preserved.',
+  )
+}
+
+if (
+  results[0]?.vehicle?.year !== 2008 ||
+  results[0]?.vehicle?.make !== 'Mazda' ||
+  results[0]?.vehicle?.model !== 'Mazda3' ||
+  results[0]?.vehicle?.mileage !== 126000
+) {
+  throw new Error(
+    'User-submitted vehicle metadata was not preserved.',
   )
 }
 
