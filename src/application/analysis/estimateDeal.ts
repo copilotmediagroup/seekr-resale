@@ -61,12 +61,13 @@ export class DealEstimationService {
     hunter,
     overrides = {},
   }: EstimateDealInput): Promise<DealEstimationResult> {
+    const estimates = {} as DealEstimateSet
+
     const context: DealEstimationContext = {
       listing,
       hunter,
+      resolvedEstimates: estimates,
     }
-
-    const estimates = {} as DealEstimateSet
 
     for (const field of ESTIMATE_FIELDS) {
       const override = overrides[field]

@@ -272,7 +272,81 @@ console.log('PASS')
 
 console.log()
 console.log(
-  '===== SCENARIO 5 — DUPLICATE FIELD PROVIDERS REJECTED =====',
+  '===== SCENARIO 5 — DEPENDENT PROVIDER SEES RESOLVED PURCHASE PRICE =====',
+)
+
+let observedPurchasePrice: number | null = null
+
+const dependentTaxProvider: DealEstimateProvider = {
+  field: 'estimatedTaxesAndRegistration',
+
+  async estimate(context) {
+    observedPurchasePrice =
+      context.resolvedEstimates
+        ?.expectedPurchasePrice
+        ?.amount ?? null
+
+    return {
+      amount: 200,
+      confidence: 'medium',
+      origin: 'provider',
+      basis:
+        'Dependent provider test estimate.',
+    }
+  },
+}
+
+const dependentService =
+  new DealEstimationService([
+    provider('expectedPurchasePrice', 4000),
+    dependentTaxProvider,
+  ])
+
+await dependentService.estimate({
+  listing,
+  hunter,
+  overrides: {
+    expectedPurchasePrice: {
+      amount: 3600,
+      confidence: 'high',
+      origin: 'provider',
+      basis:
+        'User negotiated purchase price.',
+    },
+  },
+})
+
+if (observedPurchasePrice !== 3600) {
+  throw new Error(
+    `Dependent provider saw purchase price ${observedPurchasePrice}; expected resolved user value 3600.`,
+  )
+}
+
+console.log('PASS')
+console.log()
+
+console.log(
+  '===== SCENARIO 6 — DEPENDENT PROVIDER SEES PROVIDER PURCHASE PRICE WHEN NO OVERRIDE EXISTS =====',
+)
+
+observedPurchasePrice = null
+
+await dependentService.estimate({
+  listing,
+  hunter,
+})
+
+if (observedPurchasePrice !== 4000) {
+  throw new Error(
+    `Dependent provider saw purchase price ${observedPurchasePrice}; expected resolved provider value 4000.`,
+  )
+}
+
+console.log('PASS')
+console.log()
+
+console.log(
+  '===== SCENARIO 7 — DUPLICATE FIELD PROVIDERS REJECTED =====',
 )
 
 let duplicateRejected = false

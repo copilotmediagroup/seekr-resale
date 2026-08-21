@@ -7,6 +7,8 @@ import type { VehicleMarketComparableQuery } from '../../domain/valuation/Vehicl
 import { AcquisitionVehicleMarketComparableProvider } from '../../infrastructure/analysis/acquisitionVehicleMarketComparableProvider'
 import { VehicleMarketResaleEstimateProvider } from '../../infrastructure/analysis/vehicleMarketResaleEstimateProvider'
 import { VehicleRepairEstimateProvider } from '../../infrastructure/analysis/vehicleRepairEstimateProvider'
+import { TaxesAndRegistrationDealEstimateProvider } from '../../infrastructure/analysis/taxesAndRegistrationDealEstimateProvider'
+import { UserControlledTaxesAndRegistrationEstimateProvider } from '../../infrastructure/analysis/userControlledTaxesAndRegistrationEstimateProvider'
 import { TransportDealEstimateProvider } from '../../infrastructure/analysis/transportDealEstimateProvider'
 import { UserControlledTransportEstimateProvider } from '../../infrastructure/analysis/userControlledTransportEstimateProvider'
 import {
@@ -60,6 +62,9 @@ export const createHunterRuntime = (): HunterRuntime => {
       new VehicleRepairEstimateProvider(),
       new TransportDealEstimateProvider(
         new UserControlledTransportEstimateProvider(),
+      ),
+      new TaxesAndRegistrationDealEstimateProvider(
+        new UserControlledTaxesAndRegistrationEstimateProvider(),
       ),
     ]),
   }
