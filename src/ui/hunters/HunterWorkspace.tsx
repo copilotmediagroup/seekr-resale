@@ -1,8 +1,14 @@
 import { useEffect, useState } from 'react'
-import type { Hunter, MarketplaceSource } from '../../domain/hunters/Hunter'
+import type {
+  Hunter,
+  HunterCategory,
+  MarketplaceSource,
+} from '../../domain/hunters/Hunter'
 import { createHunter } from '../../domain/hunters/createHunter'
 import {
+  addHunterCategory,
   addHunterSource,
+  removeHunterCategory,
   removeHunterSource,
 } from '../../domain/hunters/updateHunter'
 import type { HunterService } from '../../application/hunters/hunterService'
@@ -28,6 +34,56 @@ const MARKETPLACE_OPTIONS: Array<{
     name: 'Craigslist',
     description: 'Local classifieds and direct seller listings.',
     badge: 'CL',
+  },
+]
+
+const CATEGORY_OPTIONS: Array<{
+  id: HunterCategory
+  name: string
+  description: string
+  badge: string
+}> = [
+  {
+    id: 'vehicles',
+    name: 'Vehicles',
+    description: 'Cars, trucks, vans, motorcycles, and other vehicles.',
+    badge: 'VEH',
+  },
+  {
+    id: 'electronics',
+    name: 'Electronics',
+    description: 'Phones, computers, gaming, audio, and consumer tech.',
+    badge: 'TEC',
+  },
+  {
+    id: 'tools',
+    name: 'Tools',
+    description: 'Power tools, shop equipment, and professional gear.',
+    badge: 'TLS',
+  },
+  {
+    id: 'appliances',
+    name: 'Appliances',
+    description: 'Washers, dryers, refrigerators, and home appliances.',
+    badge: 'APP',
+  },
+  {
+    id: 'furniture',
+    name: 'Furniture',
+    description: 'Home, office, outdoor, and specialty furniture.',
+    badge: 'FUR',
+  },
+  {
+    id: 'collectibles',
+    name: 'Collectibles',
+    description: 'Trading items, memorabilia, vintage goods, and rarities.',
+    badge: 'COL',
+  },
+  {
+    id: 'other',
+    name: 'Other',
+    description: 'Anything that does not fit the standard categories.',
+    badge: 'OTH',
   },
 ]
 
@@ -171,6 +227,37 @@ export function HunterWorkspace({ service }: HunterWorkspaceProps) {
           selected
             ? addHunterSource(updatedHunter, marketplace.id)
             : removeHunterSource(updatedHunter, marketplace.id),
+        current,
+      )
+    })
+  }
+
+  function updateCategory(
+    category: HunterCategory,
+    selected: boolean,
+  ) {
+    setDraft((current) => {
+      if (!current) {
+        return current
+      }
+
+      return selected
+        ? addHunterCategory(current, category)
+        : removeHunterCategory(current, category)
+    })
+  }
+
+  function updateAllCategories(selected: boolean) {
+    setDraft((current) => {
+      if (!current) {
+        return current
+      }
+
+      return CATEGORY_OPTIONS.reduce(
+        (updatedHunter, category) =>
+          selected
+            ? addHunterCategory(updatedHunter, category.id)
+            : removeHunterCategory(updatedHunter, category.id),
         current,
       )
     })
@@ -497,6 +584,110 @@ export function HunterWorkspace({ service }: HunterWorkspaceProps) {
                         ? 'No marketplaces selected'
                         : `${draft.sources.length} marketplace${
                             draft.sources.length === 1 ? '' : 's'
+                          }`}
+                    </strong>
+                  </div>
+                </div>
+
+                <div className="sectionDivider" />
+
+                <div className="configurationHeading">
+                  <div>
+                    <span className="sectionNumber">03</span>
+                    <div>
+                      <h3>Categories</h3>
+                      <p>
+                        Choose the types of resale opportunities this Hunter
+                        should look for.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="categorySection">
+                  <button
+                    className={`allCategoriesControl ${
+                      CATEGORY_OPTIONS.every((category) =>
+                        draft.categories.includes(category.id),
+                      )
+                        ? 'allCategoriesControlActive'
+                        : ''
+                    }`}
+                    onClick={() => {
+                      const allSelected = CATEGORY_OPTIONS.every(
+                        (category) =>
+                          draft.categories.includes(category.id),
+                      )
+
+                      updateAllCategories(!allSelected)
+                    }}
+                    type="button"
+                  >
+                    <div className="allCategoriesIcon">ALL</div>
+
+                    <div className="categoryCopy">
+                      <strong>All Categories</strong>
+                      <span>
+                        Let this Hunter search across every available category.
+                      </span>
+                    </div>
+
+                    <span className="categorySelectionIndicator">
+                      {CATEGORY_OPTIONS.every((category) =>
+                        draft.categories.includes(category.id),
+                      )
+                        ? 'Selected'
+                        : 'Select all'}
+                    </span>
+                  </button>
+
+                  <div className="categoryGrid">
+                    {CATEGORY_OPTIONS.map((category) => {
+                      const selected = draft.categories.includes(
+                        category.id,
+                      )
+
+                      return (
+                        <button
+                          className={`categoryCard ${
+                            selected ? 'categoryCardActive' : ''
+                          }`}
+                          key={category.id}
+                          onClick={() =>
+                            updateCategory(category.id, !selected)
+                          }
+                          type="button"
+                        >
+                          <div className="categoryBadge">
+                            {category.badge}
+                          </div>
+
+                          <div className="categoryCopy">
+                            <strong>{category.name}</strong>
+                            <span>{category.description}</span>
+                          </div>
+
+                          <span
+                            className={`categoryCheck ${
+                              selected ? 'categoryCheckActive' : ''
+                            }`}
+                          >
+                            {selected ? '✓' : ''}
+                          </span>
+                        </button>
+                      )
+                    })}
+                  </div>
+
+                  <div className="categorySummary">
+                    <span>WATCHING</span>
+                    <strong>
+                      {draft.categories.length === 0
+                        ? 'No categories selected'
+                        : `${draft.categories.length} categor${
+                            draft.categories.length === 1
+                              ? 'y'
+                              : 'ies'
                           }`}
                     </strong>
                   </div>
