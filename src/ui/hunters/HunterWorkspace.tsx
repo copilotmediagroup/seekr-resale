@@ -16,6 +16,7 @@ import {
 import type { HunterService } from '../../application/hunters/hunterService'
 import { HunterListPanel } from './HunterListPanel'
 import { HunterEditor } from './HunterEditor'
+import { HunterWorkspaceFeedback } from './HunterWorkspaceFeedback'
 
 interface HunterWorkspaceProps {
   service: HunterService
@@ -652,65 +653,13 @@ export function HunterWorkspace({ service }: HunterWorkspaceProps) {
 
   return (
     <main className="workspace">
-      {toast && (
-        <div
-          aria-live="polite"
-          className={`seekrToast ${
-            toast.tone === 'error' ? 'seekrToastError' : 'seekrToastSuccess'
-          }`}
-          role="status"
-        >
-          <span className="seekrToastIcon">
-            {toast.tone === 'error' ? '!' : '✓'}
-          </span>
+      <HunterWorkspaceFeedback
+        onDiscardChanges={discardUnsavedChanges}
+        onKeepEditing={keepEditing}
+        showUnsavedChanges={pendingSelectionId !== null}
+        toast={toast}
+      />
 
-          <span>{toast.message}</span>
-        </div>
-      )}
-
-      {pendingSelectionId && (
-        <div
-          aria-labelledby="unsaved-changes-title"
-          aria-modal="true"
-          className="seekrModalBackdrop"
-          role="dialog"
-        >
-          <div className="seekrModal">
-            <div className="seekrModalIcon">!</div>
-
-            <div className="seekrModalContent">
-              <span className="seekrModalEyebrow">UNSAVED CHANGES</span>
-
-              <h3 id="unsaved-changes-title">
-                Leave this Hunter without saving?
-              </h3>
-
-              <p>
-                Your latest edits have not been saved. You can keep editing or
-                discard those changes and open the other Hunter.
-              </p>
-            </div>
-
-            <div className="seekrModalActions">
-              <button
-                className="seekrModalSecondary"
-                onClick={keepEditing}
-                type="button"
-              >
-                Keep Editing
-              </button>
-
-              <button
-                className="seekrModalDanger"
-                onClick={() => void discardUnsavedChanges()}
-                type="button"
-              >
-                Discard Changes
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
       <div className="shell">
         <header className="topbar">
           <div className="brandBlock">
