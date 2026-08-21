@@ -2,6 +2,7 @@ import {
   createEstimatedDealEvaluationService,
   type EstimatedDealEvaluationComposition,
 } from './createEstimatedDealEvaluationService'
+import { ListingAskingPriceEstimateProvider } from '../../infrastructure/analysis/listingAskingPriceEstimateProvider'
 import {
   createUserMediatedDiscovery,
   type UserMediatedDiscoveryComposition,
@@ -14,5 +15,7 @@ export interface HunterRuntime {
 
 export const createHunterRuntime = (): HunterRuntime => ({
   discovery: createUserMediatedDiscovery(),
-  evaluation: createEstimatedDealEvaluationService(),
+  evaluation: createEstimatedDealEvaluationService([
+    new ListingAskingPriceEstimateProvider(),
+  ]),
 })

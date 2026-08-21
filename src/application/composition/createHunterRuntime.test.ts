@@ -107,7 +107,7 @@ const main = async (): Promise<void> => {
 
   assert(
     evaluation?.status === 'pending_estimates',
-    'Production runtime without estimate providers must remain pending.',
+    'Production runtime with only asking-price estimation must remain pending.',
   )
 
   if (evaluation?.status !== 'pending_estimates') {
@@ -118,8 +118,45 @@ const main = async (): Promise<void> => {
 
   assert(
     !evaluation.estimation.complete,
-    'Production runtime must not claim complete estimation without providers.',
+    'Production runtime must remain incomplete while six providers are missing.',
   )
+
+  assert(
+    evaluation.estimation.estimates.expectedPurchasePrice?.amount === 2500,
+    'Production runtime did not derive expected purchase price from listing asking price.',
+  )
+
+  assert(
+    evaluation.estimation.estimates.expectedPurchasePrice?.origin ===
+      'provider',
+    'Production asking-price estimate did not preserve provider provenance.',
+  )
+
+  assert(
+    evaluation.estimation.missing.length === 6,
+    `Expected exactly 6 missing estimates, received ${evaluation.estimation.missing.length}.`,
+  )
+
+  assert(
+    !evaluation.estimation.missing.includes(
+      'expectedPurchasePrice',
+    ),
+    'Expected purchase price remained incorrectly marked missing.',
+  )
+
+  for (const field of [
+    'estimatedResaleValue',
+    'estimatedRepairCost',
+    'estimatedTransportCost',
+    'estimatedTaxesAndRegistration',
+    'estimatedTransactionFees',
+    'estimatedOtherCosts',
+  ] as const) {
+    assert(
+      evaluation.estimation.missing.includes(field),
+      `Production runtime incorrectly satisfied missing field: ${field}.`,
+    )
+  }
 
   assert(
     evaluation.evaluation.analysis.economics === null,
