@@ -1686,3 +1686,196 @@
     transition: none;
   }
 }
+
+
+/* =========================================================
+   SEEKR UNSAVED CHANGES PROTECTION
+========================================================= */
+
+.saveNote {
+  transition:
+    color 150ms ease,
+    opacity 150ms ease;
+}
+
+.saveNoteDirty {
+  color: #fbbf24;
+}
+
+.saveNoteDirty .saveDot {
+  background: #f59e0b;
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.34);
+}
+
+.seekrModalBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(2, 5, 10, 0.7);
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+  animation: seekrBackdropIn 150ms ease;
+}
+
+.seekrModal {
+  width: min(430px, 100%);
+  padding: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.095);
+  border-radius: 18px;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.035),
+      rgba(255, 255, 255, 0.012)
+    ),
+    #0c1016;
+  box-shadow:
+    0 30px 90px rgba(0, 0, 0, 0.52),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  animation: seekrModalIn 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.seekrModalIcon {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 17px;
+  border: 1px solid rgba(251, 191, 36, 0.2);
+  border-radius: 11px;
+  background: rgba(245, 158, 11, 0.09);
+  color: #fbbf24;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.seekrModalEyebrow {
+  display: block;
+  margin-bottom: 8px;
+  color: #f59e0b;
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: 0.13em;
+}
+
+.seekrModalContent h3 {
+  margin: 0;
+  color: #f4f6f8;
+  font-size: 20px;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+}
+
+.seekrModalContent p {
+  margin: 10px 0 0;
+  color: #8993a1;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.seekrModalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 9px;
+  margin-top: 22px;
+}
+
+.seekrModalSecondary,
+.seekrModalDanger {
+  min-height: 37px;
+  padding: 0 14px;
+  border-radius: 9px;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 750;
+  cursor: pointer;
+  transition:
+    transform 110ms ease,
+    border-color 140ms ease,
+    background 140ms ease,
+    color 140ms ease,
+    box-shadow 140ms ease;
+}
+
+.seekrModalSecondary {
+  border: 1px solid #252c36;
+  background: #12171e;
+  color: #c5cbd3;
+}
+
+.seekrModalSecondary:hover {
+  border-color: #36404d;
+  background: #171d25;
+  color: #eef1f4;
+}
+
+.seekrModalDanger {
+  border: 1px solid rgba(248, 113, 113, 0.24);
+  background: rgba(239, 68, 68, 0.09);
+  color: #fca5a5;
+}
+
+.seekrModalDanger:hover {
+  border-color: rgba(248, 113, 113, 0.42);
+  background: rgba(239, 68, 68, 0.14);
+  color: #fecaca;
+}
+
+.seekrModalSecondary:active,
+.seekrModalDanger:active {
+  transform: translateY(1px) scale(0.97);
+}
+
+.seekrModalSecondary:focus-visible,
+.seekrModalDanger:focus-visible {
+  outline: 2px solid rgba(96, 165, 250, 0.58);
+  outline-offset: 2px;
+}
+
+@keyframes seekrBackdropIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes seekrModalIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 520px) {
+  .seekrModalActions {
+    flex-direction: column-reverse;
+  }
+
+  .seekrModalSecondary,
+  .seekrModalDanger {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .seekrModalBackdrop,
+  .seekrModal {
+    animation: none;
+  }
+
+  .seekrModalSecondary,
+  .seekrModalDanger {
+    transition: none;
+  }
+}

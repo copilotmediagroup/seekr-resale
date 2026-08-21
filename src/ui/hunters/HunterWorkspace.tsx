@@ -98,10 +98,21 @@ export function HunterWorkspace({ service }: HunterWorkspaceProps) {
   const [status, setStatus] = useState('Loading Hunters...')
   const [draggedHunterId, setDraggedHunterId] = useState<string | null>(null)
   const [dragOverHunterId, setDragOverHunterId] = useState<string | null>(null)
+  const [pendingSelectionId, setPendingSelectionId] = useState<string | null>(null)
   const [toast, setToast] = useState<{
     message: string
     tone: 'success' | 'error'
   } | null>(null)
+
+  const savedHunter =
+    selectedId === null
+      ? null
+      : hunters.find((hunter) => hunter.id === selectedId) ?? null
+
+  const hasUnsavedChanges =
+    draft !== null &&
+    savedHunter !== null &&
+    JSON.stringify(draft) !== JSON.stringify(savedHunter)
 
   function showToast(
     message: string,
@@ -121,6 +132,23 @@ export function HunterWorkspace({ service }: HunterWorkspaceProps) {
 
     return () => window.clearTimeout(timeout)
   }, [toast])
+
+  useEffect(() => {
+    if (!hasUnsavedChanges) {
+      return
+    }
+
+    function protectUnsavedChanges(event: BeforeUnloadEvent) {
+      event.preventDefault()
+      event.returnValue = ''
+    }
+
+    window.addEventListener('beforeunload', protectUnsavedChanges)
+
+    return () => {
+      window.removeEventListener('beforeunload', protectUnsavedChanges)
+    }
+  }, [hasUnsavedChanges])
 
   useEffect(() => {
     let active = true
@@ -172,7 +200,7 @@ export function HunterWorkspace({ service }: HunterWorkspaceProps) {
     }
   }, [service])
 
-  async function selectHunter(id: string) {
+  async function openHunter(id: string) {
     const hunter = await service.getHunter(id)
 
     if (!hunter) {
@@ -182,6 +210,36 @@ export function HunterWorkspace({ service }: HunterWorkspaceProps) {
     setSelectedId(id)
     setDraft(hunter)
     setStatus(`Editing ${hunter.name}`)
+  }
+
+  async function selectHunter(id: string) {
+    if (id === selectedId) {
+      return
+    }
+
+    if (hasUnsavedChanges) {
+      setPendingSelectionId(id)
+      return
+    }
+
+    await openHunter(id)
+  }
+
+  async function discardUnsavedChanges() {
+    const targetId = pendingSelectionId
+
+    setPendingSelectionId(null)
+
+    if (!targetId) {
+      return
+    }
+
+    await openHunter(targetId)
+    showToast('Changes discarded')
+  }
+
+  function keepEditing() {
+    setPendingSelectionId(null)
   }
 
   async function createNewHunter() {
@@ -576,6 +634,7 @@ export function HunterWorkspace({ service }: HunterWorkspaceProps) {
       setHunters(refreshed)
       setSelectedId(saved.id)
       setDraft(saved)
+      setPendingSelectionId(null)
       setStatus('Hunter saved')
       showToast('Hunter saved')
     } catch (error) {
@@ -604,6 +663,50 @@ export function HunterWorkspace({ service }: HunterWorkspaceProps) {
           </span>
 
           <span>{toast.message}</span>
+        </div>
+      )}
+
+      {pendingSelectionId && (
+        <div
+          aria-labelledby="unsaved-changes-title"
+          aria-modal="true"
+          className="seekrModalBackdrop"
+          role="dialog"
+        >
+          <div className="seekrModal">
+            <div className="seekrModalIcon">!</div>
+
+            <div className="seekrModalContent">
+              <span className="seekrModalEyebrow">UNSAVED CHANGES</span>
+
+              <h3 id="unsaved-changes-title">
+                Leave this Hunter without saving?
+              </h3>
+
+              <p>
+                Your latest edits have not been saved. You can keep editing or
+                discard those changes and open the other Hunter.
+              </p>
+            </div>
+
+            <div className="seekrModalActions">
+              <button
+                className="seekrModalSecondary"
+                onClick={keepEditing}
+                type="button"
+              >
+                Keep Editing
+              </button>
+
+              <button
+                className="seekrModalDanger"
+                onClick={() => void discardUnsavedChanges()}
+                type="button"
+              >
+                Discard Changes
+              </button>
+            </div>
+          </div>
         </div>
       )}
       <div className="shell">
@@ -1305,9 +1408,15 @@ export function HunterWorkspace({ service }: HunterWorkspaceProps) {
                 </div>
 
                 <div className="editorActions">
-                  <div className="saveNote">
+                  <div
+                    className={`saveNote ${
+                      hasUnsavedChanges ? 'saveNoteDirty' : ''
+                    }`}
+                  >
                     <span className="saveDot" />
-                    Settings stay under your control
+                    {hasUnsavedChanges
+                      ? 'Unsaved changes'
+                      : 'All changes saved'}
                   </div>
 
                   <button
