@@ -56,7 +56,7 @@ export class AcquisitionVehicleMarketComparableProvider
       },
       categories: ['cars'],
       vehicle: { ...query.vehicle },
-      correlationId: null,
+      correlationId: query.hunterId,
     }
 
     const listings = await this.adapter.acquire(

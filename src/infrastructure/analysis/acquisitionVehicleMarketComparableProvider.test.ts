@@ -114,6 +114,7 @@ const main = async (): Promise<void> => {
     )
 
   const comparables = await provider.findComparables({
+    hunterId: 'hunter-test-001',
     vehicle,
     locationText: 'Tampa, FL',
   })
@@ -191,6 +192,7 @@ const main = async (): Promise<void> => {
 
   const filtered =
     await filteringProvider.findComparables({
+      hunterId: 'hunter-test-001',
       vehicle,
       locationText: 'Tampa, FL',
     })

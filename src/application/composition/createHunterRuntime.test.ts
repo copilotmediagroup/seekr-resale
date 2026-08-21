@@ -49,8 +49,99 @@ const main = async (): Promise<void> => {
           title: '  2012 Toyota Camry  ',
           description: '  Runs and drives.  ',
           askingPrice: 2500,
+          vehicle: {
+            year: 2012,
+            make: 'Toyota',
+            model: 'Camry',
+            trim: null,
+            mileage: 150000,
+            vin: null,
+            condition: 'Good',
+          },
           locationText: '  Tampa, FL  ',
           postedAt: '2026-08-20T12:00:00.000Z',
+        },
+      ],
+    },
+  )
+
+  runtime.discovery.submissionStore.submit(
+    hunter.id,
+    {
+      source: 'facebook_marketplace',
+      submittedAt: '2026-08-21T12:05:00.000Z',
+      listings: [
+        {
+          sourceListingId: 'runtime-001',
+          url: 'https://example.test/runtime-001',
+          title: '2012 Toyota Camry',
+          description: 'Runs and drives.',
+          askingPrice: 2500,
+          vehicle: {
+            year: 2012,
+            make: 'Toyota',
+            model: 'Camry',
+            trim: null,
+            mileage: 150000,
+            vin: null,
+            condition: 'Good',
+          },
+          locationText: 'Tampa, FL',
+          postedAt: '2026-08-20T12:00:00.000Z',
+        },
+        {
+          sourceListingId: 'runtime-comp-001',
+          url: 'https://example.test/runtime-comp-001',
+          title: '2012 Toyota Camry',
+          description: '',
+          askingPrice: 6900,
+          vehicle: {
+            year: 2012,
+            make: 'Toyota',
+            model: 'Camry',
+            trim: null,
+            mileage: 148000,
+            vin: null,
+            condition: 'Good',
+          },
+          locationText: 'Tampa, FL',
+          postedAt: '2026-08-19T12:00:00.000Z',
+        },
+        {
+          sourceListingId: 'runtime-comp-002',
+          url: 'https://example.test/runtime-comp-002',
+          title: '2012 Toyota Camry',
+          description: '',
+          askingPrice: 7200,
+          vehicle: {
+            year: 2012,
+            make: 'Toyota',
+            model: 'Camry',
+            trim: null,
+            mileage: 152000,
+            vin: null,
+            condition: 'Good',
+          },
+          locationText: 'Tampa, FL',
+          postedAt: '2026-08-18T12:00:00.000Z',
+        },
+        {
+          sourceListingId: 'runtime-comp-003',
+          url: 'https://example.test/runtime-comp-003',
+          title: '2012 Toyota Camry',
+          description: '',
+          askingPrice: 7500,
+          vehicle: {
+            year: 2012,
+            make: 'Toyota',
+            model: 'Camry',
+            trim: null,
+            mileage: 155000,
+            vin: null,
+            condition: 'Good',
+          },
+          locationText: 'Tampa, FL',
+          postedAt: '2026-08-17T12:00:00.000Z',
         },
       ],
     },
@@ -78,8 +169,8 @@ const main = async (): Promise<void> => {
   )
 
   assert(
-    result.listings.length === 1,
-    'Expected one normalized runtime listing.',
+    result.listings.length === 4,
+    'Expected subject listing plus three runtime comparables.',
   )
 
   assert(
@@ -93,8 +184,8 @@ const main = async (): Promise<void> => {
   )
 
   assert(
-    result.evaluations.length === 1,
-    'Expected one runtime evaluation.',
+    result.evaluations.length === 4,
+    'Expected four runtime evaluations.',
   )
 
   assert(
@@ -102,12 +193,23 @@ const main = async (): Promise<void> => {
     'Runtime listing unexpectedly failed evaluation.',
   )
 
+  const subjectIntelligence =
+    result.evaluations.find(
+      ({ listing }) =>
+        listing.sourceListingId === 'runtime-001',
+    )
+
+  assert(
+    subjectIntelligence !== undefined,
+    'Expected runtime subject listing evaluation.',
+  )
+
   const evaluation =
-    result.evaluations[0]?.evaluation
+    subjectIntelligence?.evaluation
 
   assert(
     evaluation?.status === 'pending_estimates',
-    'Production runtime with only asking-price estimation must remain pending.',
+    'Production runtime must remain pending until remaining cost estimates exist.',
   )
 
   if (evaluation?.status !== 'pending_estimates') {
@@ -118,7 +220,7 @@ const main = async (): Promise<void> => {
 
   assert(
     !evaluation.estimation.complete,
-    'Production runtime must remain incomplete while six providers are missing.',
+    'Production runtime must remain incomplete while five cost estimates are missing.',
   )
 
   assert(
@@ -133,8 +235,15 @@ const main = async (): Promise<void> => {
   )
 
   assert(
-    evaluation.estimation.missing.length === 6,
-    `Expected exactly 6 missing estimates, received ${evaluation.estimation.missing.length}.`,
+    evaluation.estimation.estimates.estimatedResaleValue?.amount ===
+      7200,
+    'Production runtime did not derive the expected market resale median.',
+  )
+
+  assert(
+    evaluation.estimation.estimates.estimatedResaleValue?.origin ===
+      'automated',
+    'Production resale estimate did not preserve automated market provenance.',
   )
 
   assert(
@@ -144,8 +253,19 @@ const main = async (): Promise<void> => {
     'Expected purchase price remained incorrectly marked missing.',
   )
 
+  assert(
+    !evaluation.estimation.missing.includes(
+      'estimatedResaleValue',
+    ),
+    'Estimated resale value remained incorrectly marked missing.',
+  )
+
+  assert(
+    evaluation.estimation.missing.length === 5,
+    `Expected exactly 5 remaining estimates, received ${evaluation.estimation.missing.length}.`,
+  )
+
   for (const field of [
-    'estimatedResaleValue',
     'estimatedRepairCost',
     'estimatedTransportCost',
     'estimatedTaxesAndRegistration',

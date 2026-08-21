@@ -50,6 +50,7 @@ const run = async (): Promise<void> => {
   const provider = new RecordingComparableProvider()
 
   const query: VehicleMarketComparableQuery = {
+    hunterId: 'hunter-test-001',
     vehicle: {
       year: 2012,
       make: 'Toyota',

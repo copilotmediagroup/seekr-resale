@@ -31,6 +31,7 @@ export class VehicleMarketResaleEstimateProvider
 
     const comparables =
       await this.comparableProvider.findComparables({
+        hunterId: context.hunter.id,
         vehicle,
         locationText: context.listing.locationText,
       })
