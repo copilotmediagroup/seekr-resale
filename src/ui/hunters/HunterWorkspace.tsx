@@ -14,6 +14,7 @@ import {
   updateHunterThreshold,
 } from '../../domain/hunters/updateHunter'
 import type { HunterService } from '../../application/hunters/hunterService'
+import { HunterListPanel } from './HunterListPanel'
 
 interface HunterWorkspaceProps {
   service: HunterService
@@ -744,136 +745,21 @@ export function HunterWorkspace({ service }: HunterWorkspaceProps) {
         </div>
 
         <section className="workspaceGrid">
-          <aside className="hunterListPanel">
-            <div className="panelHeader">
-              <div>
-                <span className="panelEyebrow">YOUR HUNTERS</span>
-                <strong>{hunters.length}</strong>
-              </div>
-
-              <button
-                className="newHunterButton"
-                onClick={() => void createNewHunter()}
-                type="button"
-              >
-                <span>+</span>
-                New Hunter
-              </button>
-            </div>
-
-            <div className="hunterList">
-              {hunters.map((hunter) => (
-                <div
-                  className={`hunterCard ${
-                    selectedId === hunter.id ? 'hunterCardActive' : ''
-                  } ${
-                    draggedHunterId === hunter.id ? 'hunterCardDragging' : ''
-                  } ${
-                    dragOverHunterId === hunter.id ? 'hunterCardDragTarget' : ''
-                  }`}
-                  key={hunter.id}
-                  onDragOver={(event) => {
-                    event.preventDefault()
-                    moveHunterOver(hunter.id)
-                  }}
-                  onDrop={(event) => {
-                    event.preventDefault()
-                    void finishHunterDrop(hunter.id)
-                  }}
-                >
-                  {hunters.length > 1 && (
-                    <button
-                      aria-label={`Reorder ${hunter.name || 'Hunter'}`}
-                      className="hunterDragHandle"
-                      draggable
-                      onClick={(event) => event.stopPropagation()}
-                      onDragEnd={cancelHunterDrag}
-                      onDragStart={(event) => {
-                        event.dataTransfer.effectAllowed = 'move'
-                        event.dataTransfer.setData('text/plain', hunter.id)
-                        beginHunterDrag(hunter.id)
-                      }}
-                      title="Drag to reorder"
-                      type="button"
-                    >
-                      <span />
-                      <span />
-                      <span />
-                      <span />
-                      <span />
-                      <span />
-                    </button>
-                  )}
-
-                  <button
-                    className="hunterCardSelect hunterCardSelectWithManagementActions"
-                    onClick={() => void selectHunter(hunter.id)}
-                    type="button"
-                  >
-                    <div className="hunterCardMain">
-                      <span className="hunterCardName">
-                        {hunter.name || 'Untitled Hunter'}
-                      </span>
-
-                      <span className="hunterCardMeta">
-                        {hunter.location.postalCode || 'Location not set'}
-                        {' · '}
-                        {hunter.location.radiusMiles === null
-                          ? 'Any radius'
-                          : `${hunter.location.radiusMiles} mi`}
-                      </span>
-                    </div>
-
-                  </button>
-
-                  <button
-                    aria-label={
-                      hunter.enabled
-                        ? `Pause ${hunter.name || 'Hunter'}`
-                        : `Activate ${hunter.name || 'Hunter'}`
-                    }
-                    aria-pressed={hunter.enabled}
-                    className={`hunterStateButton ${
-                      hunter.enabled ? 'hunterStateButtonEnabled' : ''
-                    }`}
-                    onClick={() => void toggleHunterEnabled(hunter.id)}
-                    title={hunter.enabled ? 'Pause Hunter' : 'Activate Hunter'}
-                    type="button"
-                  >
-                    <span className="hunterStateButtonDot" />
-                    <span>{hunter.enabled ? 'ON' : 'OFF'}</span>
-                  </button>
-
-                  <button
-                    aria-label={`Duplicate ${hunter.name || 'Hunter'}`}
-                    className="hunterDuplicateButton"
-                    onClick={() => void duplicateHunter(hunter.id)}
-                    title="Duplicate Hunter"
-                    type="button"
-                  >
-                    ⧉
-                  </button>
-
-                  {hunters.length > 1 && (
-                    <button
-                      aria-label={`Remove ${hunter.name || 'Hunter'}`}
-                      className="hunterRemoveButton"
-                      onClick={() => void removeHunter(hunter.id)}
-                      title="Remove Hunter"
-                      type="button"
-                    >
-                      ×
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
-
-            <div className="listFooter">
-              Create separate Hunters for different markets, categories,
-              locations, and resale strategies.
-            </div>
-          </aside>
+          <HunterListPanel
+            dragOverHunterId={dragOverHunterId}
+            draggedHunterId={draggedHunterId}
+            hunters={hunters}
+            onCreate={() => void createNewHunter()}
+            onDragEnd={cancelHunterDrag}
+            onDragStart={beginHunterDrag}
+            onDrop={(id) => void finishHunterDrop(id)}
+            onDuplicate={(id) => void duplicateHunter(id)}
+            onMoveOver={moveHunterOver}
+            onRemove={(id) => void removeHunter(id)}
+            onSelect={(id) => void selectHunter(id)}
+            onToggleEnabled={(id) => void toggleHunterEnabled(id)}
+            selectedId={selectedId}
+          />
 
           <section className="hunterEditor">
             {draft && (
