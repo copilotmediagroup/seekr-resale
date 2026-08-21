@@ -95,6 +95,8 @@ export function HunterWorkspace({ service }: HunterWorkspaceProps) {
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [draft, setDraft] = useState<Hunter | null>(null)
   const [status, setStatus] = useState('Loading Hunters...')
+  const [draggedHunterId, setDraggedHunterId] = useState<string | null>(null)
+  const [dragOverHunterId, setDragOverHunterId] = useState<string | null>(null)
   const [toast, setToast] = useState<{
     message: string
     tone: 'success' | 'error'
@@ -312,6 +314,73 @@ export function HunterWorkspace({ service }: HunterWorkspaceProps) {
       setStatus(message)
       showToast(message, 'error')
     }
+  }
+
+  function beginHunterDrag(id: string) {
+    setDraggedHunterId(id)
+    setDragOverHunterId(null)
+  }
+
+  function moveHunterOver(id: string) {
+    if (!draggedHunterId || draggedHunterId === id) {
+      setDragOverHunterId(null)
+      return
+    }
+
+    setDragOverHunterId(id)
+  }
+
+  async function finishHunterDrop(targetId: string) {
+    if (!draggedHunterId || draggedHunterId === targetId) {
+      setDraggedHunterId(null)
+      setDragOverHunterId(null)
+      return
+    }
+
+    const fromIndex = hunters.findIndex(
+      (hunter) => hunter.id === draggedHunterId,
+    )
+    const toIndex = hunters.findIndex(
+      (hunter) => hunter.id === targetId,
+    )
+
+    if (fromIndex === -1 || toIndex === -1) {
+      setDraggedHunterId(null)
+      setDragOverHunterId(null)
+      return
+    }
+
+    const previousOrder = [...hunters]
+    const reordered = [...hunters]
+    const [movedHunter] = reordered.splice(fromIndex, 1)
+
+    reordered.splice(toIndex, 0, movedHunter)
+
+    setHunters(reordered)
+    setDraggedHunterId(null)
+    setDragOverHunterId(null)
+    setStatus('Saving Hunter order...')
+
+    try {
+      await service.reorderHunters(reordered)
+      setStatus('Hunter order saved')
+      showToast('Hunter order saved')
+    } catch (error) {
+      setHunters(previousOrder)
+
+      const message =
+        error instanceof Error
+          ? error.message
+          : 'Unable to save Hunter order'
+
+      setStatus(message)
+      showToast(message, 'error')
+    }
+  }
+
+  function cancelHunterDrag() {
+    setDraggedHunterId(null)
+    setDragOverHunterId(null)
   }
 
   function updateName(name: string) {
@@ -540,9 +609,45 @@ export function HunterWorkspace({ service }: HunterWorkspaceProps) {
                 <div
                   className={`hunterCard ${
                     selectedId === hunter.id ? 'hunterCardActive' : ''
+                  } ${
+                    draggedHunterId === hunter.id ? 'hunterCardDragging' : ''
+                  } ${
+                    dragOverHunterId === hunter.id ? 'hunterCardDragTarget' : ''
                   }`}
                   key={hunter.id}
+                  onDragOver={(event) => {
+                    event.preventDefault()
+                    moveHunterOver(hunter.id)
+                  }}
+                  onDrop={(event) => {
+                    event.preventDefault()
+                    void finishHunterDrop(hunter.id)
+                  }}
                 >
+                  {hunters.length > 1 && (
+                    <button
+                      aria-label={`Reorder ${hunter.name || 'Hunter'}`}
+                      className="hunterDragHandle"
+                      draggable
+                      onClick={(event) => event.stopPropagation()}
+                      onDragEnd={cancelHunterDrag}
+                      onDragStart={(event) => {
+                        event.dataTransfer.effectAllowed = 'move'
+                        event.dataTransfer.setData('text/plain', hunter.id)
+                        beginHunterDrag(hunter.id)
+                      }}
+                      title="Drag to reorder"
+                      type="button"
+                    >
+                      <span />
+                      <span />
+                      <span />
+                      <span />
+                      <span />
+                      <span />
+                    </button>
+                  )}
+
                   <button
                     className="hunterCardSelect hunterCardSelectWithActions"
                     onClick={() => void selectHunter(hunter.id)}

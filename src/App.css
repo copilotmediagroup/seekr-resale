@@ -247,6 +247,99 @@
   background: #10151d;
 }
 
+.hunterDragHandle {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  left: 7px;
+  width: 22px;
+  height: 30px;
+  display: grid;
+  grid-template-columns: repeat(2, 3px);
+  grid-template-rows: repeat(3, 3px);
+  align-content: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 0;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  opacity: 0;
+  cursor: grab;
+  transform: translateY(-50%);
+  transition:
+    opacity 140ms ease,
+    background 140ms ease,
+    transform 160ms ease;
+}
+
+.hunterDragHandle span {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #687282;
+  transition: background 140ms ease;
+}
+
+.hunterCard:hover .hunterDragHandle,
+.hunterDragHandle:focus-visible,
+.hunterCardDragging .hunterDragHandle {
+  opacity: 1;
+}
+
+.hunterDragHandle:hover {
+  background: rgba(96, 165, 250, 0.08);
+}
+
+.hunterDragHandle:hover span {
+  background: #93c5fd;
+}
+
+.hunterDragHandle:active {
+  cursor: grabbing;
+}
+
+.hunterDragHandle:focus-visible {
+  outline: 1px solid rgba(96, 165, 250, 0.5);
+  outline-offset: 1px;
+}
+
+.hunterCard:has(.hunterDragHandle) .hunterCardSelect {
+  padding-left: 36px;
+}
+
+.hunterCardDragging {
+  z-index: 3;
+  opacity: 0.58;
+  border-color: rgba(96, 165, 250, 0.35);
+  background: #111923;
+  transform: scale(0.985);
+}
+
+.hunterCardDragTarget {
+  border-color: rgba(96, 165, 250, 0.62);
+  background:
+    linear-gradient(
+      90deg,
+      rgba(59, 130, 246, 0.14),
+      rgba(59, 130, 246, 0.035)
+    ),
+    #10151c;
+}
+
+.hunterCardDragTarget::before {
+  content: '';
+  position: absolute;
+  z-index: 4;
+  top: -1px;
+  right: 10px;
+  left: 10px;
+  height: 2px;
+  border-radius: 999px;
+  background: #60a5fa;
+  box-shadow: 0 0 12px rgba(96, 165, 250, 0.38);
+}
+
 .hunterCardSelect {
   width: 100%;
   min-width: 0;

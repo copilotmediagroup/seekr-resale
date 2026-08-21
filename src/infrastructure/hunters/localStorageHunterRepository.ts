@@ -26,6 +26,10 @@ export class LocalStorageHunterRepository implements HunterRepository {
     this.write(hunters)
   }
 
+  async saveOrder(hunters: Hunter[]): Promise<void> {
+    this.write(hunters)
+  }
+
   async delete(id: string): Promise<void> {
     const hunters = this.read()
     this.write(hunters.filter((hunter) => hunter.id !== id))

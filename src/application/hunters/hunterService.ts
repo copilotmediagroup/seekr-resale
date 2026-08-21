@@ -29,6 +29,10 @@ export class HunterService {
     await this.repository.save(hunter)
   }
 
+  async reorderHunters(hunters: Hunter[]): Promise<void> {
+    await this.repository.saveOrder(hunters)
+  }
+
   async deleteHunter(id: string): Promise<void> {
     await this.repository.delete(id)
   }
