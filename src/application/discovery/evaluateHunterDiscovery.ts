@@ -1,10 +1,8 @@
 import type { Hunter } from '../../domain/hunters/Hunter'
 import type { NormalizedListing } from '../../domain/discovery/NormalizedListing'
 import type {
-  EstimatedDealEvaluation,
   EstimatedDealEvaluationService,
 } from '../analysis/evaluateEstimatedDeal'
-import type { DealEstimateOverrides } from '../analysis/estimateDeal'
 import type {
   DiscoverySourceFailure,
   DiscoverySourceSuccess,
@@ -12,16 +10,18 @@ import type {
 import { executeHunterDiscovery } from './executeHunterDiscovery'
 import type { DiscoveryService } from './discoveryService'
 import { normalizeMarketplaceListing } from './normalizeMarketplaceListing'
+import {
+  evaluateNormalizedHunterListings,
+  type HunterListingEvaluationFailure,
+  type HunterListingIntelligence,
+  type ListingDealEstimateOverrides,
+} from './evaluateNormalizedHunterListings'
 
-export interface HunterListingIntelligence {
-  listing: NormalizedListing
-  evaluation: EstimatedDealEvaluation
-}
-
-export interface HunterListingEvaluationFailure {
-  listing: NormalizedListing
-  error: string
-}
+export type {
+  HunterListingEvaluationFailure,
+  HunterListingIntelligence,
+  ListingDealEstimateOverrides,
+} from './evaluateNormalizedHunterListings'
 
 export interface HunterDiscoveryIntelligenceResult {
   hunterId: string
@@ -32,18 +32,6 @@ export interface HunterDiscoveryIntelligenceResult {
   discoveryFailures: DiscoverySourceFailure[]
   planningErrors: string[]
 }
-
-const getErrorMessage = (error: unknown): string => {
-  if (error instanceof Error) {
-    return error.message
-  }
-
-  return String(error)
-}
-
-export type ListingDealEstimateOverrides = Readonly<
-  Record<string, DealEstimateOverrides | undefined>
->
 
 export const evaluateHunterDiscovery = async (
   hunter: Hunter,
@@ -72,48 +60,15 @@ export const evaluateHunterDiscovery = async (
     normalizeMarketplaceListing,
   )
 
-  const outcomes = await Promise.all(
-    listings.map(async (listing) => {
-      try {
-        const evaluation = await evaluationService.evaluate({
-          hunter,
-          listing,
-          overrides: overridesByListingId[listing.id],
-        })
-
-        return {
-          status: 'success' as const,
-          listing,
-          evaluation,
-        }
-      } catch (error) {
-        return {
-          status: 'failure' as const,
-          listing,
-          error: getErrorMessage(error),
-        }
-      }
-    }),
+  const {
+    evaluations,
+    evaluationFailures,
+  } = await evaluateNormalizedHunterListings(
+    hunter,
+    listings,
+    evaluationService,
+    overridesByListingId,
   )
-
-  const evaluations: HunterListingIntelligence[] = []
-  const evaluationFailures: HunterListingEvaluationFailure[] = []
-
-  for (const outcome of outcomes) {
-    if (outcome.status === 'success') {
-      evaluations.push({
-        listing: outcome.listing,
-        evaluation: outcome.evaluation,
-      })
-
-      continue
-    }
-
-    evaluationFailures.push({
-      listing: outcome.listing,
-      error: outcome.error,
-    })
-  }
 
   return {
     hunterId: hunter.id,
