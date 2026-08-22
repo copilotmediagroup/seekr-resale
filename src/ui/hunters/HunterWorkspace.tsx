@@ -5,6 +5,7 @@ import type {
 import type { HunterService } from '../../application/hunters/hunterService'
 import type { HunterIntelligencePort } from '../../application/hunters/hunterIntelligencePort'
 import type { HunterAcquisitionPort } from '../../application/hunters/hunterAcquisitionPort'
+import type { ListingEconomicsPort } from '../../application/hunters/listingEconomicsPort'
 import { HunterListPanel } from './HunterListPanel'
 import { HunterEditor } from './HunterEditor'
 import { HunterWorkspaceFeedback } from './HunterWorkspaceFeedback'
@@ -16,6 +17,7 @@ interface HunterWorkspaceProps {
   service: HunterService
   intelligence: HunterIntelligencePort
   acquisition: HunterAcquisitionPort
+  economics: ListingEconomicsPort
 }
 
 const MARKETPLACE_OPTIONS: Array<{
@@ -93,6 +95,7 @@ export function HunterWorkspace({
   service,
   intelligence,
   acquisition,
+  economics,
 }: HunterWorkspaceProps) {
   const {
     hunters,
@@ -229,7 +232,9 @@ export function HunterWorkspace({
         )}
 
         <HunterOpportunityResults
+          economics={economics}
           isEvaluating={isEvaluating}
+          onEconomicsSaved={runHunterIntelligence}
           result={
             intelligenceResult?.hunterId === draft?.id
               ? intelligenceResult

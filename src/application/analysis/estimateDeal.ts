@@ -28,12 +28,12 @@ export interface DealEstimationResult {
 
 const ESTIMATE_FIELDS: DealEstimateField[] = [
   'estimatedResaleValue',
-  'expectedPurchasePrice',
   'estimatedRepairCost',
   'estimatedTransportCost',
+  'estimatedOtherCosts',
+  'expectedPurchasePrice',
   'estimatedTaxesAndRegistration',
   'estimatedTransactionFees',
-  'estimatedOtherCosts',
 ]
 
 export class DealEstimationService {
@@ -63,12 +63,6 @@ export class DealEstimationService {
   }: EstimateDealInput): Promise<DealEstimationResult> {
     const estimates = {} as DealEstimateSet
 
-    const context: DealEstimationContext = {
-      listing,
-      hunter,
-      resolvedEstimates: estimates,
-    }
-
     for (const field of ESTIMATE_FIELDS) {
       const override = overrides[field]
 
@@ -77,7 +71,17 @@ export class DealEstimationService {
           ...override,
           origin: 'user',
         }
+      }
+    }
 
+    const context: DealEstimationContext = {
+      listing,
+      hunter,
+      resolvedEstimates: estimates,
+    }
+
+    for (const field of ESTIMATE_FIELDS) {
+      if (estimates[field] !== undefined) {
         continue
       }
 
@@ -96,5 +100,6 @@ export class DealEstimationService {
       complete: completeness.complete,
       missing: completeness.missing,
     }
+
   }
 }

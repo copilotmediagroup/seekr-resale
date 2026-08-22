@@ -2343,3 +2343,129 @@
     grid-column: auto;
   }
 }
+
+.dealEconomicsEditor {
+  margin-top: 14px;
+  padding: 15px;
+  border: 1px solid rgba(88, 151, 255, 0.14);
+  border-radius: 14px;
+  background: rgba(38, 91, 178, 0.045);
+}
+
+.dealEconomicsHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.dealEconomicsHeader > div {
+  display: grid;
+  gap: 4px;
+}
+
+.dealEconomicsHeader > div > span,
+.dealEconomicsOptional {
+  color: rgba(113, 171, 255, 0.8);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+
+.dealEconomicsHeader strong {
+  font-size: 13px;
+}
+
+.dealEconomicsHelp {
+  margin: 7px 0 14px;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.dealEconomicsGrid {
+  display: grid;
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.dealEconomicsGrid label {
+  display: grid;
+  gap: 6px;
+}
+
+.dealEconomicsGrid label > span {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.dealEconomicsMoneyInput {
+  display: flex;
+  align-items: center;
+  min-height: 42px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.035);
+  transition:
+    border-color 140ms ease,
+    background 140ms ease,
+    transform 100ms ease;
+}
+
+.dealEconomicsMoneyInput:focus-within {
+  border-color: rgba(112, 171, 255, 0.42);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.dealEconomicsMoneyInput > span {
+  padding-left: 11px;
+  color: rgba(255, 255, 255, 0.42);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.dealEconomicsMoneyInput input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  outline: 0;
+  padding: 0 11px 0 5px;
+}
+
+.dealEconomicsMoneyInput input:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.dealEconomicsActions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 13px;
+}
+
+.dealEconomicsMessage {
+  min-height: 16px;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 11px;
+}
+
+@media (max-width: 760px) {
+  .dealEconomicsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .dealEconomicsHeader,
+  .dealEconomicsActions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}

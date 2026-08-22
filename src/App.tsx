@@ -14,6 +14,7 @@ function App() {
   return (
     <HunterWorkspace
       acquisition={hunterRuntime.acquisition}
+      economics={hunterRuntime.economics}
       intelligence={hunterRuntime.intelligence}
       service={hunterService}
     />

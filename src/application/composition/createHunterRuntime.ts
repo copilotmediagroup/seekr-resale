@@ -2,7 +2,7 @@ import {
   createEstimatedDealEvaluationService,
   type EstimatedDealEvaluationComposition,
 } from './createEstimatedDealEvaluationService'
-import { ListingAskingPriceEstimateProvider } from '../../infrastructure/analysis/listingAskingPriceEstimateProvider'
+import { SeekrBuyPriceEstimateProvider } from '../../infrastructure/analysis/seekrBuyPriceEstimateProvider'
 import type { VehicleMarketComparableQuery } from '../../domain/valuation/VehicleMarketComparableProvider'
 import { AcquisitionVehicleMarketComparableProvider } from '../../infrastructure/analysis/acquisitionVehicleMarketComparableProvider'
 import { VehicleMarketResaleEstimateProvider } from '../../infrastructure/analysis/vehicleMarketResaleEstimateProvider'
@@ -23,7 +23,12 @@ import {
   type UserMediatedDiscoveryComposition,
 } from './createUserMediatedDiscovery'
 import { HunterIntelligenceService } from '../discovery/hunterIntelligenceService'
+import type { DealEstimateField } from '../../domain/analysis/DealEstimate'
 import type { HunterAcquisitionPort } from '../hunters/hunterAcquisitionPort'
+import {
+  monetaryEstimateFromUserValue,
+  type ListingEconomicsPort,
+} from '../hunters/listingEconomicsPort'
 
 export interface HunterRuntime {
   discovery: UserMediatedDiscoveryComposition
@@ -31,6 +36,7 @@ export interface HunterRuntime {
   listingEconomics: ListingEconomicsRepository
   intelligence: HunterIntelligenceService
   acquisition: HunterAcquisitionPort
+  economics: ListingEconomicsPort
 }
 
 export const createHunterRuntime = (): HunterRuntime => {
@@ -68,7 +74,7 @@ export const createHunterRuntime = (): HunterRuntime => {
     new LocalStorageListingEconomicsRepository()
 
   const evaluation = createEstimatedDealEvaluationService([
-    new ListingAskingPriceEstimateProvider(),
+    new SeekrBuyPriceEstimateProvider(),
     new VehicleMarketResaleEstimateProvider(
       combinedComparableProvider,
     ),
@@ -116,11 +122,79 @@ export const createHunterRuntime = (): HunterRuntime => {
     },
   }
 
+  const economics: ListingEconomicsPort = {
+    async getListingEconomics(listingId) {
+      const stored =
+        await listingEconomics.getByListingId(
+          listingId,
+        )
+
+      return Object.fromEntries(
+        Object.entries(stored).flatMap(
+          ([field, estimate]) =>
+            estimate === undefined
+              ? []
+              : [[field, estimate.amount]],
+        ),
+      )
+    },
+
+    async saveListingEconomics(
+      listingId,
+      values,
+    ) {
+      const overrides = Object.fromEntries(
+        Object.entries(values).flatMap(
+          ([field, amount]) => {
+            if (
+              amount === undefined ||
+              !Number.isFinite(amount) ||
+              amount < 0
+            ) {
+              return []
+            }
+
+            return [[
+              field,
+              monetaryEstimateFromUserValue(
+                field as DealEstimateField,
+                amount,
+              ),
+            ]]
+          },
+        ),
+      )
+
+      const existing =
+        await listingEconomics.getByListingId(
+          listingId,
+        )
+
+      await listingEconomics.save(
+        listingId,
+        {
+          ...(existing.estimatedResaleValue
+            ? {
+                estimatedResaleValue:
+                  existing.estimatedResaleValue,
+              }
+            : {}),
+          ...overrides,
+        },
+      )
+    },
+
+    async clearListingEconomics(listingId) {
+      await listingEconomics.delete(listingId)
+    },
+  }
+
   return {
     discovery,
     evaluation,
     listingEconomics,
     intelligence,
     acquisition,
+    economics,
   }
 }

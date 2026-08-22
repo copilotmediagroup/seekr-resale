@@ -1,8 +1,12 @@
 import type { HunterDiscoveryIntelligenceResult } from '../../application/discovery/evaluateHunterDiscovery'
+import type { ListingEconomicsPort } from '../../application/hunters/listingEconomicsPort'
+import { HunterDealEconomicsEditor } from './HunterDealEconomicsEditor'
 
 interface HunterOpportunityResultsProps {
   result: HunterDiscoveryIntelligenceResult | null
   isEvaluating: boolean
+  economics: ListingEconomicsPort
+  onEconomicsSaved: () => Promise<void>
 }
 
 const formatMoney = (value: number | null): string => {
@@ -38,6 +42,8 @@ const formatSource = (source: string): string =>
 export function HunterOpportunityResults({
   result,
   isEvaluating,
+  economics: economicsPort,
+  onEconomicsSaved,
 }: HunterOpportunityResultsProps) {
   if (isEvaluating) {
     return (
@@ -229,6 +235,13 @@ export function HunterOpportunityResults({
                     </strong>
                   </div>
                 </div>
+
+                <HunterDealEconomicsEditor
+                  economics={economicsPort}
+                  isEvaluating={isEvaluating}
+                  listingId={listing.id}
+                  onSaved={onEconomicsSaved}
+                />
 
                 {missing.length > 0 && (
                   <div className="opportunityMissingData">
