@@ -7,6 +7,7 @@ import type { HunterIntelligencePort } from '../../application/hunters/hunterInt
 import { HunterListPanel } from './HunterListPanel'
 import { HunterEditor } from './HunterEditor'
 import { HunterWorkspaceFeedback } from './HunterWorkspaceFeedback'
+import { HunterOpportunityResults } from './HunterOpportunityResults'
 import { useHunterWorkspace } from './useHunterWorkspace'
 
 interface HunterWorkspaceProps {
@@ -100,6 +101,7 @@ export function HunterWorkspace({
     toast,
     hasUnsavedChanges,
     isEvaluating,
+    intelligenceResult,
     selectHunter,
     discardUnsavedChanges,
     keepEditing,
@@ -203,6 +205,15 @@ export function HunterWorkspace({
             onThresholdChange={updateThreshold}
           />
         </section>
+
+        <HunterOpportunityResults
+          isEvaluating={isEvaluating}
+          result={
+            intelligenceResult?.hunterId === draft?.id
+              ? intelligenceResult
+              : null
+          }
+        />
       </div>
     </main>
   )

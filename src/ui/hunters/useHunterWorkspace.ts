@@ -15,6 +15,7 @@ import {
 } from '../../domain/hunters/updateHunter'
 import type { HunterService } from '../../application/hunters/hunterService'
 import type { HunterIntelligencePort } from '../../application/hunters/hunterIntelligencePort'
+import type { HunterDiscoveryIntelligenceResult } from '../../application/discovery/evaluateHunterDiscovery'
 
 const MARKETPLACE_OPTIONS: MarketplaceSource[] = [
   'facebook_marketplace',
@@ -42,6 +43,8 @@ const [hunters, setHunters] = useState<Hunter[]>([])
   const [draft, setDraft] = useState<Hunter | null>(null)
   const [status, setStatus] = useState('Loading Hunters...')
   const [isEvaluating, setIsEvaluating] = useState(false)
+  const [intelligenceResult, setIntelligenceResult] =
+    useState<HunterDiscoveryIntelligenceResult | null>(null)
   const [draggedHunterId, setDraggedHunterId] = useState<string | null>(null)
   const [dragOverHunterId, setDragOverHunterId] = useState<string | null>(null)
   const [pendingSelectionId, setPendingSelectionId] = useState<string | null>(null)
@@ -576,17 +579,21 @@ const [hunters, setHunters] = useState<Hunter[]>([])
     }
 
     setIsEvaluating(true)
+    setIntelligenceResult(null)
     setStatus(`Analyzing ${draft.name || 'Hunter'}...`)
 
     try {
       const result = await intelligence.evaluateHunter(draft)
 
       if (result.planningErrors.length > 0) {
+        setIntelligenceResult(null)
         const message = result.planningErrors.join(' ')
         setStatus(message)
         showToast(message, 'error')
         return
       }
+
+      setIntelligenceResult(result)
 
       const listingCount = result.listings.length
       const message =
@@ -602,6 +609,7 @@ const [hunters, setHunters] = useState<Hunter[]>([])
           ? error.message
           : 'Unable to run Hunter intelligence'
 
+      setIntelligenceResult(null)
       setStatus(message)
       showToast(message, 'error')
     } finally {
@@ -652,6 +660,7 @@ const [hunters, setHunters] = useState<Hunter[]>([])
     toast,
     hasUnsavedChanges,
     isEvaluating,
+    intelligenceResult,
     selectHunter,
     discardUnsavedChanges,
     keepEditing,
