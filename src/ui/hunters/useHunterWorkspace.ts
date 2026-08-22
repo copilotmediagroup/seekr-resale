@@ -14,6 +14,7 @@ import {
   updateHunterThreshold,
 } from '../../domain/hunters/updateHunter'
 import type { HunterService } from '../../application/hunters/hunterService'
+import type { HunterIntelligencePort } from '../../application/hunters/hunterIntelligencePort'
 
 const MARKETPLACE_OPTIONS: MarketplaceSource[] = [
   'facebook_marketplace',
@@ -32,11 +33,15 @@ const CATEGORY_OPTIONS: HunterCategory[] = [
 
 const INITIAL_HUNTER_ID = 'hunter-default'
 
-export function useHunterWorkspace(service: HunterService) {
+export function useHunterWorkspace(
+  service: HunterService,
+  intelligence: HunterIntelligencePort,
+) {
 const [hunters, setHunters] = useState<Hunter[]>([])
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [draft, setDraft] = useState<Hunter | null>(null)
   const [status, setStatus] = useState('Loading Hunters...')
+  const [isEvaluating, setIsEvaluating] = useState(false)
   const [draggedHunterId, setDraggedHunterId] = useState<string | null>(null)
   const [dragOverHunterId, setDragOverHunterId] = useState<string | null>(null)
   const [pendingSelectionId, setPendingSelectionId] = useState<string | null>(null)
@@ -558,6 +563,52 @@ const [hunters, setHunters] = useState<Hunter[]>([])
     })
   }
 
+  async function runHunterIntelligence() {
+    if (!draft || isEvaluating) {
+      return
+    }
+
+    if (hasUnsavedChanges) {
+      const message = 'Save this Hunter before running intelligence'
+      setStatus(message)
+      showToast(message, 'error')
+      return
+    }
+
+    setIsEvaluating(true)
+    setStatus(`Analyzing ${draft.name || 'Hunter'}...`)
+
+    try {
+      const result = await intelligence.evaluateHunter(draft)
+
+      if (result.planningErrors.length > 0) {
+        const message = result.planningErrors.join(' ')
+        setStatus(message)
+        showToast(message, 'error')
+        return
+      }
+
+      const listingCount = result.listings.length
+      const message =
+        listingCount === 1
+          ? '1 opportunity analyzed'
+          : `${listingCount} opportunities analyzed`
+
+      setStatus(message)
+      showToast(message)
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : 'Unable to run Hunter intelligence'
+
+      setStatus(message)
+      showToast(message, 'error')
+    } finally {
+      setIsEvaluating(false)
+    }
+  }
+
   async function saveHunter() {
     if (!draft) {
       return
@@ -600,6 +651,7 @@ const [hunters, setHunters] = useState<Hunter[]>([])
     pendingSelectionId,
     toast,
     hasUnsavedChanges,
+    isEvaluating,
     selectHunter,
     discardUnsavedChanges,
     keepEditing,
@@ -620,6 +672,7 @@ const [hunters, setHunters] = useState<Hunter[]>([])
     updateCategory,
     updateAllCategories,
     updateThreshold,
+    runHunterIntelligence,
     saveHunter,
   }
 }

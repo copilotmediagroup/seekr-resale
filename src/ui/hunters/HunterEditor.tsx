@@ -21,6 +21,7 @@ interface CategoryOption {
 interface HunterEditorProps {
   draft: Hunter | null
   hasUnsavedChanges: boolean
+  isEvaluating: boolean
   marketplaceOptions: MarketplaceOption[]
   categoryOptions: CategoryOption[]
   onNameChange: (name: string) => void
@@ -41,12 +42,14 @@ interface HunterEditorProps {
     key: keyof Hunter['thresholds'],
     rawValue: string,
   ) => void
+  onRunIntelligence: () => void | Promise<void>
   onSave: () => void | Promise<void>
 }
 
 export function HunterEditor({
   draft,
   hasUnsavedChanges,
+  isEvaluating,
   marketplaceOptions,
   categoryOptions,
   onNameChange,
@@ -58,6 +61,7 @@ export function HunterEditor({
   onCategoryChange,
   onAllCategoriesChange,
   onThresholdChange,
+  onRunIntelligence,
   onSave,
 }: HunterEditorProps) {
   return (
@@ -605,13 +609,23 @@ export function HunterEditor({
                       : 'All changes saved'}
                   </div>
 
-                  <button
-                    className="primaryButton"
-                    onClick={() => void onSave()}
-                    type="button"
-                  >
-                    Save Hunter
-                  </button>
+                  <div className="editorActionButtons">
+                    <button
+                      className="secondaryButton"
+                      disabled={isEvaluating}
+                      onClick={() => void onRunIntelligence()}
+                      type="button"
+                    >
+                      {isEvaluating ? 'Analyzing...' : 'Run Intelligence'}
+                    </button>
+                    <button
+                      className="primaryButton"
+                      onClick={() => void onSave()}
+                      type="button"
+                    >
+                      Save Hunter
+                    </button>
+                  </div>
                 </div>
               </>
             )}

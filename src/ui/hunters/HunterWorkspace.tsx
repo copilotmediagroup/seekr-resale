@@ -3,6 +3,7 @@ import type {
   MarketplaceSource,
 } from '../../domain/hunters/Hunter'
 import type { HunterService } from '../../application/hunters/hunterService'
+import type { HunterIntelligencePort } from '../../application/hunters/hunterIntelligencePort'
 import { HunterListPanel } from './HunterListPanel'
 import { HunterEditor } from './HunterEditor'
 import { HunterWorkspaceFeedback } from './HunterWorkspaceFeedback'
@@ -10,6 +11,7 @@ import { useHunterWorkspace } from './useHunterWorkspace'
 
 interface HunterWorkspaceProps {
   service: HunterService
+  intelligence: HunterIntelligencePort
 }
 
 const MARKETPLACE_OPTIONS: Array<{
@@ -83,7 +85,10 @@ const CATEGORY_OPTIONS: Array<{
 ]
 
 
-export function HunterWorkspace({ service }: HunterWorkspaceProps) {
+export function HunterWorkspace({
+  service,
+  intelligence,
+}: HunterWorkspaceProps) {
   const {
     hunters,
     selectedId,
@@ -94,6 +99,7 @@ export function HunterWorkspace({ service }: HunterWorkspaceProps) {
     pendingSelectionId,
     toast,
     hasUnsavedChanges,
+    isEvaluating,
     selectHunter,
     discardUnsavedChanges,
     keepEditing,
@@ -114,8 +120,9 @@ export function HunterWorkspace({ service }: HunterWorkspaceProps) {
     updateCategory,
     updateAllCategories,
     updateThreshold,
+    runHunterIntelligence,
     saveHunter,
-  } = useHunterWorkspace(service)
+  } = useHunterWorkspace(service, intelligence)
 
   return (
     <main className="workspace">
@@ -181,6 +188,7 @@ export function HunterWorkspace({ service }: HunterWorkspaceProps) {
             categoryOptions={CATEGORY_OPTIONS}
             draft={draft}
             hasUnsavedChanges={hasUnsavedChanges}
+            isEvaluating={isEvaluating}
             marketplaceOptions={MARKETPLACE_OPTIONS}
             onAllCategoriesChange={updateAllCategories}
             onAllMarketplacesChange={updateAllMarketplaces}
@@ -190,6 +198,7 @@ export function HunterWorkspace({ service }: HunterWorkspaceProps) {
             onNameChange={updateName}
             onPostalCodeChange={updatePostalCode}
             onRadiusChange={updateRadius}
+            onRunIntelligence={runHunterIntelligence}
             onSave={saveHunter}
             onThresholdChange={updateThreshold}
           />
