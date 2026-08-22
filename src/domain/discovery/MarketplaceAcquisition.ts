@@ -3,12 +3,15 @@ import type { MarketplaceAcquisitionRequest } from './MarketplaceAcquisitionRequ
 import type { RawMarketplaceListing } from './RawMarketplaceListing'
 
 export type MarketplaceAcquisitionMode =
-  | 'background'
+  | 'official_api'
+  | 'authorized_feed'
+  | 'authorized_browser'
   | 'user_mediated'
+  | 'manual_import'
   | 'unavailable'
 
 export type MarketplaceAutomationLevel =
-  | 'automated'
+  | 'automatic'
   | 'assisted'
   | 'manual'
   | 'unavailable'

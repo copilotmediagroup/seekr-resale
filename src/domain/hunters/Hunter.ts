@@ -1,6 +1,7 @@
 export type KnownMarketplaceSource =
   | 'facebook_marketplace'
   | 'craigslist'
+  | 'ebay'
 
 export type MarketplaceSource =
   | KnownMarketplaceSource
