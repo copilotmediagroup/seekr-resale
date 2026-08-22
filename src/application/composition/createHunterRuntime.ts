@@ -22,11 +22,13 @@ import {
   createUserMediatedDiscovery,
   type UserMediatedDiscoveryComposition,
 } from './createUserMediatedDiscovery'
+import { HunterIntelligenceService } from '../discovery/hunterIntelligenceService'
 
 export interface HunterRuntime {
   discovery: UserMediatedDiscoveryComposition
   evaluation: EstimatedDealEvaluationComposition
   listingEconomics: ListingEconomicsRepository
+  intelligence: HunterIntelligenceService
 }
 
 export const createHunterRuntime = (): HunterRuntime => {
@@ -60,28 +62,39 @@ export const createHunterRuntime = (): HunterRuntime => {
     },
   }
 
+  const listingEconomics =
+    new LocalStorageListingEconomicsRepository()
+
+  const evaluation = createEstimatedDealEvaluationService([
+    new ListingAskingPriceEstimateProvider(),
+    new VehicleMarketResaleEstimateProvider(
+      combinedComparableProvider,
+    ),
+    new VehicleRepairEstimateProvider(),
+    new TransportDealEstimateProvider(
+      new UserControlledTransportEstimateProvider(),
+    ),
+    new TaxesAndRegistrationDealEstimateProvider(
+      new UserControlledTaxesAndRegistrationEstimateProvider(),
+    ),
+    new TransactionFeeDealEstimateProvider(
+      new UserControlledTransactionFeeEstimateProvider(),
+    ),
+    new OtherCostDealEstimateProvider(
+      new UserControlledOtherCostEstimateProvider(),
+    ),
+  ])
+
+  const intelligence = new HunterIntelligenceService(
+    discovery.discoveryService,
+    evaluation.evaluationService,
+    listingEconomics,
+  )
+
   return {
     discovery,
-    listingEconomics:
-      new LocalStorageListingEconomicsRepository(),
-    evaluation: createEstimatedDealEvaluationService([
-      new ListingAskingPriceEstimateProvider(),
-      new VehicleMarketResaleEstimateProvider(
-        combinedComparableProvider,
-      ),
-      new VehicleRepairEstimateProvider(),
-      new TransportDealEstimateProvider(
-        new UserControlledTransportEstimateProvider(),
-      ),
-      new TaxesAndRegistrationDealEstimateProvider(
-        new UserControlledTaxesAndRegistrationEstimateProvider(),
-      ),
-      new TransactionFeeDealEstimateProvider(
-        new UserControlledTransactionFeeEstimateProvider(),
-      ),
-      new OtherCostDealEstimateProvider(
-        new UserControlledOtherCostEstimateProvider(),
-      ),
-    ]),
+    evaluation,
+    listingEconomics,
+    intelligence,
   }
 }

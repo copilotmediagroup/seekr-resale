@@ -1,6 +1,5 @@
 import type { Hunter } from '../../domain/hunters/Hunter'
 import { normalizeMarketplaceListing } from '../discovery/normalizeMarketplaceListing'
-import { evaluateHunterDiscovery } from '../discovery/evaluateHunterDiscovery'
 import { createHunterRuntime } from './createHunterRuntime'
 
 const hunter: Hunter = {
@@ -213,19 +212,8 @@ const main = async (): Promise<void> => {
     },
   )
 
-  const persistedOverrides =
-    await runtime.listingEconomics.getByListingId(
-      subjectListingId,
-    )
-
-  const result = await evaluateHunterDiscovery(
-    hunter,
-    runtime.discovery.discoveryService,
-    runtime.evaluation.evaluationService,
-    {
-      [subjectListingId]: persistedOverrides,
-    },
-  )
+  const result =
+    await runtime.intelligence.evaluateHunter(hunter)
 
   assert(
     result.planningErrors.length === 0,
