@@ -1,4 +1,5 @@
 import type { Hunter } from '../../domain/hunters/Hunter'
+import { normalizeMarketplaceListing } from '../discovery/normalizeMarketplaceListing'
 import { evaluateHunterDiscovery } from '../discovery/evaluateHunterDiscovery'
 import { createHunterRuntime } from './createHunterRuntime'
 
@@ -21,6 +22,29 @@ const hunter: Hunter = {
   },
 }
 
+const storage = new Map<string, string>()
+
+Object.defineProperty(globalThis, 'localStorage', {
+  value: {
+    getItem(key: string): string | null {
+      return storage.get(key) ?? null
+    },
+
+    setItem(key: string, value: string): void {
+      storage.set(key, value)
+    },
+
+    removeItem(key: string): void {
+      storage.delete(key)
+    },
+
+    clear(): void {
+      storage.clear()
+    },
+  },
+  configurable: true,
+})
+
 const assert = (
   condition: boolean,
   message: string,
@@ -36,6 +60,48 @@ const main = async (): Promise<void> => {
   )
 
   const runtime = createHunterRuntime()
+
+  localStorage.clear()
+
+  const subjectListingId =
+    normalizeMarketplaceListing({
+      source: 'facebook_marketplace',
+      sourceListingId: 'runtime-001',
+      url: 'https://example.test/runtime-001',
+      title: '2012 Toyota Camry',
+      description: 'Runs and drives.',
+      askingPrice: 2500,
+      vehicle: {
+        year: 2012,
+        make: 'Toyota',
+        model: 'Camry',
+        trim: null,
+        mileage: 150000,
+        vin: null,
+        condition: 'Runs great, no mechanical issues',
+      },
+      locationText: 'Tampa, FL',
+      postedAt: '2026-08-20T12:00:00.000Z',
+      discoveredAt: '2026-08-21T12:00:00.000Z',
+    }).id
+
+  await runtime.listingEconomics.save(
+    subjectListingId,
+    {
+      estimatedTransportCost: {
+        amount: 0,
+        confidence: 'high',
+        origin: 'user',
+        basis: 'Runtime persisted transport override.',
+      },
+      estimatedOtherCosts: {
+        amount: 125,
+        confidence: 'high',
+        origin: 'user',
+        basis: 'Runtime persisted other-cost override.',
+      },
+    },
+  )
 
   runtime.discovery.submissionStore.submit(
     hunter.id,
@@ -147,10 +213,18 @@ const main = async (): Promise<void> => {
     },
   )
 
+  const persistedOverrides =
+    await runtime.listingEconomics.getByListingId(
+      subjectListingId,
+    )
+
   const result = await evaluateHunterDiscovery(
     hunter,
     runtime.discovery.discoveryService,
     runtime.evaluation.evaluationService,
+    {
+      [subjectListingId]: persistedOverrides,
+    },
   )
 
   assert(
@@ -280,28 +354,51 @@ const main = async (): Promise<void> => {
   )
 
   assert(
-    evaluation.estimation.missing.length === 4,
-    `Expected exactly 4 remaining estimates, received ${evaluation.estimation.missing.length}.`,
+    evaluation.estimation.missing.length === 2,
+    `Expected exactly 2 remaining estimates after persisted overrides, received ${evaluation.estimation.missing.length}.`,
   )
 
   assert(
-    evaluation.estimation.estimates.estimatedTransportCost ===
-      null,
-    'Production runtime must not invent transport cost without a user-controlled quote.',
+    evaluation.estimation.estimates.estimatedTransportCost
+      ?.amount === 0,
+    'Persisted zero transport override did not reach runtime evaluation.',
   )
 
   assert(
-    evaluation.estimation.missing.includes(
+    evaluation.estimation.estimates.estimatedTransportCost
+      ?.origin === 'user',
+    'Persisted transport override must preserve user provenance.',
+  )
+
+  assert(
+    !evaluation.estimation.missing.includes(
       'estimatedTransportCost',
     ),
-    'Production runtime must report transport cost missing when no user-controlled quote exists.',
+    'Persisted transport override remained incorrectly missing.',
+  )
+
+  assert(
+    evaluation.estimation.estimates.estimatedOtherCosts
+      ?.amount === 125,
+    'Persisted other-cost override did not reach runtime evaluation.',
+  )
+
+  assert(
+    evaluation.estimation.estimates.estimatedOtherCosts
+      ?.origin === 'user',
+    'Persisted other-cost override must preserve user provenance.',
+  )
+
+  assert(
+    !evaluation.estimation.missing.includes(
+      'estimatedOtherCosts',
+    ),
+    'Persisted other-cost override remained incorrectly missing.',
   )
 
   for (const field of [
-    'estimatedTransportCost',
     'estimatedTaxesAndRegistration',
     'estimatedTransactionFees',
-    'estimatedOtherCosts',
   ] as const) {
     assert(
       evaluation.estimation.missing.includes(field),

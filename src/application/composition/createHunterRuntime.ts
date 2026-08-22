@@ -15,6 +15,9 @@ import { OtherCostDealEstimateProvider } from '../../infrastructure/analysis/oth
 import { UserControlledOtherCostEstimateProvider } from '../../infrastructure/analysis/userControlledOtherCostEstimateProvider'
 import { TransportDealEstimateProvider } from '../../infrastructure/analysis/transportDealEstimateProvider'
 import { UserControlledTransportEstimateProvider } from '../../infrastructure/analysis/userControlledTransportEstimateProvider'
+import type { ListingEconomicsRepository } from '../../domain/listingEconomics/listingEconomicsRepository'
+import { LocalStorageListingEconomicsRepository } from '../../infrastructure/listingEconomics/localStorageListingEconomicsRepository'
+
 import {
   createUserMediatedDiscovery,
   type UserMediatedDiscoveryComposition,
@@ -23,6 +26,7 @@ import {
 export interface HunterRuntime {
   discovery: UserMediatedDiscoveryComposition
   evaluation: EstimatedDealEvaluationComposition
+  listingEconomics: ListingEconomicsRepository
 }
 
 export const createHunterRuntime = (): HunterRuntime => {
@@ -58,6 +62,8 @@ export const createHunterRuntime = (): HunterRuntime => {
 
   return {
     discovery,
+    listingEconomics:
+      new LocalStorageListingEconomicsRepository(),
     evaluation: createEstimatedDealEvaluationService([
       new ListingAskingPriceEstimateProvider(),
       new VehicleMarketResaleEstimateProvider(
