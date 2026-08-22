@@ -23,12 +23,14 @@ import {
   type UserMediatedDiscoveryComposition,
 } from './createUserMediatedDiscovery'
 import { HunterIntelligenceService } from '../discovery/hunterIntelligenceService'
+import type { HunterAcquisitionPort } from '../hunters/hunterAcquisitionPort'
 
 export interface HunterRuntime {
   discovery: UserMediatedDiscoveryComposition
   evaluation: EstimatedDealEvaluationComposition
   listingEconomics: ListingEconomicsRepository
   intelligence: HunterIntelligenceService
+  acquisition: HunterAcquisitionPort
 }
 
 export const createHunterRuntime = (): HunterRuntime => {
@@ -91,10 +93,34 @@ export const createHunterRuntime = (): HunterRuntime => {
     listingEconomics,
   )
 
+  const acquisition: HunterAcquisitionPort = {
+    submitMarketplaceListings(hunterId, submission) {
+      discovery.submissionStore.append(hunterId, {
+        source: submission.source,
+        listings: submission.listings.map((listing) => ({
+          ...listing,
+          vehicle: listing.vehicle
+            ? { ...listing.vehicle }
+            : null,
+        })),
+        submittedAt: new Date().toISOString(),
+      })
+    },
+
+    clearMarketplaceListings(hunterId, source) {
+      discovery.submissionStore.clear(hunterId, source)
+    },
+
+    clearHunterMarketplaceListings(hunterId) {
+      discovery.submissionStore.clearHunter(hunterId)
+    },
+  }
+
   return {
     discovery,
     evaluation,
     listingEconomics,
     intelligence,
+    acquisition,
   }
 }

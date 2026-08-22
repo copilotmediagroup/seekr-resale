@@ -260,3 +260,65 @@ console.log()
 console.log(
   '===== IN-MEMORY USER SUBMISSION STORE PASSED =====',
 )
+
+console.log(
+  '===== SCENARIO 9 — APPEND BUILDS A SOURCE COLLECTION WITHOUT DUPLICATES =====',
+)
+
+const appendStore =
+  new InMemoryUserMediatedSubmissionStore()
+
+appendStore.append(
+  'hunter-alpha',
+  facebookSubmission,
+)
+
+appendStore.append(
+  'hunter-alpha',
+  {
+    source: 'facebook_marketplace',
+    submittedAt:
+      '2026-08-21T18:00:00.000Z',
+    listings: [
+      {
+        sourceListingId: 'fb-003',
+        url: 'https://example.test/fb-003',
+        title: '2010 Honda Civic',
+        askingPrice: 2800,
+      },
+      {
+        ...facebookSubmission.listings[0]!,
+        title: '2008 Mazda3 Updated',
+      },
+    ],
+  },
+)
+
+const appended =
+  appendStore.resolve(
+    createMarketplaceAcquisitionRequestForTest(
+      facebookRequest,
+    ),
+  )
+
+if (
+  appended?.listings.length !== 2
+) {
+  throw new Error(
+    `Expected 2 unique appended listings, received ${appended?.listings.length ?? 0}.`,
+  )
+}
+
+if (
+  appended.listings.find(
+    (listing) =>
+      listing.sourceListingId === 'fb-001',
+  )?.title !== '2008 Mazda3 Updated'
+) {
+  throw new Error(
+    'Duplicate listing ID was not updated deterministically.',
+  )
+}
+
+console.log('PASS')
+console.log()

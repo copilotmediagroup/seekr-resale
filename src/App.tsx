@@ -13,6 +13,7 @@ const hunterRuntime = createHunterRuntime()
 function App() {
   return (
     <HunterWorkspace
+      acquisition={hunterRuntime.acquisition}
       intelligence={hunterRuntime.intelligence}
       service={hunterService}
     />

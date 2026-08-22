@@ -4,15 +4,18 @@ import type {
 } from '../../domain/hunters/Hunter'
 import type { HunterService } from '../../application/hunters/hunterService'
 import type { HunterIntelligencePort } from '../../application/hunters/hunterIntelligencePort'
+import type { HunterAcquisitionPort } from '../../application/hunters/hunterAcquisitionPort'
 import { HunterListPanel } from './HunterListPanel'
 import { HunterEditor } from './HunterEditor'
 import { HunterWorkspaceFeedback } from './HunterWorkspaceFeedback'
 import { HunterOpportunityResults } from './HunterOpportunityResults'
+import { HunterMarketplaceSubmission } from './HunterMarketplaceSubmission'
 import { useHunterWorkspace } from './useHunterWorkspace'
 
 interface HunterWorkspaceProps {
   service: HunterService
   intelligence: HunterIntelligencePort
+  acquisition: HunterAcquisitionPort
 }
 
 const MARKETPLACE_OPTIONS: Array<{
@@ -89,6 +92,7 @@ const CATEGORY_OPTIONS: Array<{
 export function HunterWorkspace({
   service,
   intelligence,
+  acquisition,
 }: HunterWorkspaceProps) {
   const {
     hunters,
@@ -102,6 +106,8 @@ export function HunterWorkspace({
     hasUnsavedChanges,
     isEvaluating,
     intelligenceResult,
+    reportMarketplaceSubmissionSuccess,
+    reportMarketplaceSubmissionError,
     selectHunter,
     discardUnsavedChanges,
     keepEditing,
@@ -205,6 +211,22 @@ export function HunterWorkspace({
             onThresholdChange={updateThreshold}
           />
         </section>
+
+        {draft && (
+          <HunterMarketplaceSubmission
+            acquisition={acquisition}
+            hunterId={draft.id}
+            onError={
+              reportMarketplaceSubmissionError
+            }
+            onSubmitted={(message) =>
+              reportMarketplaceSubmissionSuccess(
+                `${message}. Run Intelligence to analyze it.`,
+              )
+            }
+            sources={draft.sources}
+          />
+        )}
 
         <HunterOpportunityResults
           isEvaluating={isEvaluating}

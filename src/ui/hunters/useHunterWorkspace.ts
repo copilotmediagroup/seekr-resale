@@ -566,6 +566,20 @@ const [hunters, setHunters] = useState<Hunter[]>([])
     })
   }
 
+  function reportMarketplaceSubmissionSuccess(
+    message: string,
+  ) {
+    setStatus(message)
+    showToast(message)
+  }
+
+  function reportMarketplaceSubmissionError(
+    message: string,
+  ) {
+    setStatus(message)
+    showToast(message, 'error')
+  }
+
   async function runHunterIntelligence() {
     if (!draft || isEvaluating) {
       return
@@ -682,6 +696,8 @@ const [hunters, setHunters] = useState<Hunter[]>([])
     updateAllCategories,
     updateThreshold,
     runHunterIntelligence,
+    reportMarketplaceSubmissionSuccess,
+    reportMarketplaceSubmissionError,
     saveHunter,
   }
 }

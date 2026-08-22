@@ -34,6 +34,44 @@ export class InMemoryUserMediatedSubmissionStore {
     )
   }
 
+  append(
+    hunterId: string,
+    submission: UserMediatedListingSubmission,
+  ): void {
+    const key = createKey(
+      hunterId,
+      submission.source,
+    )
+
+    const existing =
+      this.submissions.get(key)
+
+    const listings = [
+      ...(existing?.listings ?? []),
+      ...submission.listings,
+    ]
+
+    const deduplicatedListings = Array.from(
+      new Map(
+        listings.map((listing) => [
+          listing.sourceListingId,
+          {
+            ...listing,
+          },
+        ]),
+      ).values(),
+    )
+
+    this.submissions.set(
+      key,
+      cloneSubmission({
+        source: submission.source,
+        submittedAt: submission.submittedAt,
+        listings: deduplicatedListings,
+      }),
+    )
+  }
+
   resolve(
     request: MarketplaceAcquisitionRequest,
   ): UserMediatedListingSubmission | null {
