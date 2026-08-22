@@ -115,6 +115,7 @@ const main = async (): Promise<void> => {
 
   const comparables = await provider.findComparables({
     hunterId: 'hunter-test-001',
+    targetListingId: null,
     vehicle,
     locationText: 'Tampa, FL',
   })
@@ -193,6 +194,7 @@ const main = async (): Promise<void> => {
   const filtered =
     await filteringProvider.findComparables({
       hunterId: 'hunter-test-001',
+      targetListingId: null,
       vehicle,
       locationText: 'Tampa, FL',
     })
@@ -243,6 +245,99 @@ const main = async (): Promise<void> => {
   assert(
     mismatchRejected,
     'Expected adapter/provider source mismatch to be rejected.',
+  )
+
+  console.log('PASS')
+  console.log()
+
+  console.log(
+    '===== SCENARIO 5 — TARGET LISTING IS EXCLUDED FROM COMPARABLES =====',
+  )
+
+  const selfListingProvider =
+    new AcquisitionVehicleMarketComparableProvider(
+      new RecordingAcquisitionAdapter(
+        'facebook_marketplace',
+        [
+          {
+          source: 'facebook_marketplace',
+          sourceListingId: 'target-001',
+          url: 'https://example.test/target-001',
+          title: '2012 Toyota Camry',
+          description: null,
+          askingPrice: 2500,
+          vehicle: {
+            year: 2012,
+            make: 'Toyota',
+            model: 'Camry',
+            trim: 'LE',
+            mileage: 145000,
+            vin: null,
+            condition: 'Good',
+          },
+          locationText: 'Tampa, FL',
+          postedAt: null,
+          discoveredAt:
+            '2026-08-21T20:00:00.000Z',
+        },
+        {
+          source: 'facebook_marketplace',
+          sourceListingId: 'comp-002',
+          url: 'https://example.test/comp-002',
+          title: '2012 Toyota Camry LE',
+          description: null,
+          askingPrice: 6900,
+          vehicle: {
+            year: 2012,
+            make: 'Toyota',
+            model: 'Camry',
+            trim: 'LE',
+            mileage: 142000,
+            vin: null,
+            condition: 'Good',
+          },
+          locationText: 'Tampa, FL',
+          postedAt: null,
+          discoveredAt:
+            '2026-08-21T20:00:00.000Z',
+        },
+      ],
+      ),
+      {
+        source: 'facebook_marketplace',
+        acquisitionContext: {
+          userAuthorized: true,
+          userSessionAvailable: true,
+        },
+      },
+    )
+
+  const selfExcluded =
+    await selfListingProvider.findComparables({
+      hunterId: 'hunter-target-exclusion',
+      targetListingId:
+        'facebook_marketplace:target-001',
+      vehicle: {
+        year: 2012,
+        make: 'Toyota',
+        model: 'Camry',
+        trim: 'LE',
+        mileage: 145000,
+        vin: null,
+        condition: 'Good',
+      },
+      locationText: 'Tampa, FL',
+    })
+
+  assert(
+    selfExcluded.length === 1,
+    `Expected only 1 external comparable, received ${selfExcluded.length}`,
+  )
+
+  assert(
+    selfExcluded[0]?.id ===
+      'facebook_marketplace:comp-002',
+    'Target listing incorrectly remained in comparable evidence.',
   )
 
   console.log('PASS')

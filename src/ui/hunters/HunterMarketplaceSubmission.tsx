@@ -45,6 +45,13 @@ export function HunterMarketplaceSubmission({
   const [askingPrice, setAskingPrice] = useState('')
   const [locationText, setLocationText] = useState('')
   const [postedAt, setPostedAt] = useState('')
+  const [vehicleYear, setVehicleYear] = useState('')
+  const [vehicleMake, setVehicleMake] = useState('')
+  const [vehicleModel, setVehicleModel] = useState('')
+  const [vehicleTrim, setVehicleTrim] = useState('')
+  const [vehicleMileage, setVehicleMileage] = useState('')
+  const [vehicleVin, setVehicleVin] = useState('')
+  const [vehicleCondition, setVehicleCondition] = useState('')
 
   const availableSources =
     sources.length > 0
@@ -82,6 +89,44 @@ export function HunterMarketplaceSubmission({
       return
     }
 
+    const parsedYear =
+      vehicleYear.trim() === ''
+        ? null
+        : Number(vehicleYear)
+
+    if (
+      parsedYear !== null &&
+      (!Number.isInteger(parsedYear) ||
+        parsedYear < 1886 ||
+        parsedYear > new Date().getFullYear() + 1)
+    ) {
+      onError('Vehicle year must be valid')
+      return
+    }
+
+    const parsedMileage =
+      vehicleMileage.trim() === ''
+        ? null
+        : Number(vehicleMileage)
+
+    if (
+      parsedMileage !== null &&
+      (!Number.isFinite(parsedMileage) ||
+        parsedMileage < 0)
+    ) {
+      onError('Vehicle mileage must be valid')
+      return
+    }
+
+    const hasVehicleIdentity =
+      parsedYear !== null ||
+      vehicleMake.trim() !== '' ||
+      vehicleModel.trim() !== '' ||
+      vehicleTrim.trim() !== '' ||
+      parsedMileage !== null ||
+      vehicleVin.trim() !== '' ||
+      vehicleCondition.trim() !== ''
+
     acquisition.submitMarketplaceListings(
       hunterId,
       {
@@ -99,6 +144,18 @@ export function HunterMarketplaceSubmission({
               locationText.trim() || null,
             postedAt:
               postedAt.trim() || null,
+            vehicle: hasVehicleIdentity
+              ? {
+                  year: parsedYear,
+                  make: vehicleMake.trim() || null,
+                  model: vehicleModel.trim() || null,
+                  trim: vehicleTrim.trim() || null,
+                  mileage: parsedMileage,
+                  vin: vehicleVin.trim() || null,
+                  condition:
+                    vehicleCondition.trim() || null,
+                }
+              : null,
           },
         ],
       },
@@ -110,6 +167,13 @@ export function HunterMarketplaceSubmission({
     setAskingPrice('')
     setLocationText('')
     setPostedAt('')
+    setVehicleYear('')
+    setVehicleMake('')
+    setVehicleModel('')
+    setVehicleTrim('')
+    setVehicleMileage('')
+    setVehicleVin('')
+    setVehicleCondition('')
 
     onSubmitted(
       `${sourceName(source)} listing added to this Hunter`,
@@ -214,6 +278,104 @@ export function HunterMarketplaceSubmission({
             }
           />
         </label>
+
+        <div className="marketplaceVehicleSection marketplaceSubmissionWide">
+          <div className="marketplaceVehicleHeader">
+            <div>
+              <span className="marketplaceVehicleEyebrow">
+                VEHICLE DETAILS
+              </span>
+              <strong>
+                Help SEEKR find accurate market comparables
+              </strong>
+            </div>
+            <span>OPTIONAL</span>
+          </div>
+
+          <div className="marketplaceVehicleGrid">
+            <label>
+              <span>YEAR</span>
+              <input
+                inputMode="numeric"
+                placeholder="2008"
+                type="number"
+                value={vehicleYear}
+                onChange={(event) =>
+                  setVehicleYear(event.target.value)
+                }
+              />
+            </label>
+
+            <label>
+              <span>MAKE</span>
+              <input
+                placeholder="Mazda"
+                value={vehicleMake}
+                onChange={(event) =>
+                  setVehicleMake(event.target.value)
+                }
+              />
+            </label>
+
+            <label>
+              <span>MODEL</span>
+              <input
+                placeholder="Mazda3"
+                value={vehicleModel}
+                onChange={(event) =>
+                  setVehicleModel(event.target.value)
+                }
+              />
+            </label>
+
+            <label>
+              <span>TRIM</span>
+              <input
+                placeholder="i Touring"
+                value={vehicleTrim}
+                onChange={(event) =>
+                  setVehicleTrim(event.target.value)
+                }
+              />
+            </label>
+
+            <label>
+              <span>MILEAGE</span>
+              <input
+                inputMode="numeric"
+                placeholder="126000"
+                type="number"
+                min="0"
+                value={vehicleMileage}
+                onChange={(event) =>
+                  setVehicleMileage(event.target.value)
+                }
+              />
+            </label>
+
+            <label>
+              <span>CONDITION</span>
+              <input
+                placeholder="Good"
+                value={vehicleCondition}
+                onChange={(event) =>
+                  setVehicleCondition(event.target.value)
+                }
+              />
+            </label>
+
+            <label className="marketplaceVehicleVin">
+              <span>VIN</span>
+              <input
+                placeholder="Optional VIN"
+                value={vehicleVin}
+                onChange={(event) =>
+                  setVehicleVin(event.target.value)
+                }
+              />
+            </label>
+          </div>
+        </div>
 
         <label className="marketplaceSubmissionWide">
           <span>DESCRIPTION</span>

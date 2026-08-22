@@ -65,6 +65,16 @@ export class AcquisitionVehicleMarketComparableProvider
     )
 
     return listings.flatMap((listing) => {
+      const listingId =
+        `${listing.source}:${listing.sourceListingId}`
+
+      if (
+        query.targetListingId !== null &&
+        listingId === query.targetListingId
+      ) {
+        return []
+      }
+
       const comparable =
         mapMarketplaceListingToVehicleComparable(listing)
 

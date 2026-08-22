@@ -143,6 +143,8 @@ export function HunterOpportunityResults({
             const qualification =
               evaluation.evaluation.qualification
             const economics = analysis.economics
+            const progressiveResaleValue =
+              evaluation.estimation.estimates.estimatedResaleValue
             const missing = evaluation.estimation.missing
 
             return (
@@ -193,7 +195,9 @@ export function HunterOpportunityResults({
                     <span>RESALE VALUE</span>
                     <strong>
                       {formatMoney(
-                        economics?.estimatedResaleValue ?? null,
+                        economics?.estimatedResaleValue ??
+                          progressiveResaleValue?.amount ??
+                          null,
                       )}
                     </strong>
                   </div>

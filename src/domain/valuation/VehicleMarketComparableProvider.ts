@@ -3,6 +3,7 @@ import type { VehicleMarketComparable } from './VehicleMarketComparable'
 
 export interface VehicleMarketComparableQuery {
   hunterId: string
+  targetListingId: string | null
   vehicle: VehicleListingMetadata
   locationText: string | null
 }

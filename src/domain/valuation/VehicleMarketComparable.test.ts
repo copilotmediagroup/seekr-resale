@@ -51,6 +51,7 @@ const run = async (): Promise<void> => {
 
   const query: VehicleMarketComparableQuery = {
     hunterId: 'hunter-test-001',
+    targetListingId: null,
     vehicle: {
       year: 2012,
       make: 'Toyota',
