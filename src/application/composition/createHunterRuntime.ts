@@ -11,6 +11,8 @@ import { TaxesAndRegistrationDealEstimateProvider } from '../../infrastructure/a
 import { UserControlledTaxesAndRegistrationEstimateProvider } from '../../infrastructure/analysis/userControlledTaxesAndRegistrationEstimateProvider'
 import { TransactionFeeDealEstimateProvider } from '../../infrastructure/analysis/transactionFeeDealEstimateProvider'
 import { UserControlledTransactionFeeEstimateProvider } from '../../infrastructure/analysis/userControlledTransactionFeeEstimateProvider'
+import { OtherCostDealEstimateProvider } from '../../infrastructure/analysis/otherCostDealEstimateProvider'
+import { UserControlledOtherCostEstimateProvider } from '../../infrastructure/analysis/userControlledOtherCostEstimateProvider'
 import { TransportDealEstimateProvider } from '../../infrastructure/analysis/transportDealEstimateProvider'
 import { UserControlledTransportEstimateProvider } from '../../infrastructure/analysis/userControlledTransportEstimateProvider'
 import {
@@ -70,6 +72,9 @@ export const createHunterRuntime = (): HunterRuntime => {
       ),
       new TransactionFeeDealEstimateProvider(
         new UserControlledTransactionFeeEstimateProvider(),
+      ),
+      new OtherCostDealEstimateProvider(
+        new UserControlledOtherCostEstimateProvider(),
       ),
     ]),
   }
