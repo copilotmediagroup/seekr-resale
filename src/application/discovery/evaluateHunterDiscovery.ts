@@ -4,6 +4,7 @@ import type {
   EstimatedDealEvaluation,
   EstimatedDealEvaluationService,
 } from '../analysis/evaluateEstimatedDeal'
+import type { DealEstimateOverrides } from '../analysis/estimateDeal'
 import type {
   DiscoverySourceFailure,
   DiscoverySourceSuccess,
@@ -40,10 +41,15 @@ const getErrorMessage = (error: unknown): string => {
   return String(error)
 }
 
+export type ListingDealEstimateOverrides = Readonly<
+  Record<string, DealEstimateOverrides | undefined>
+>
+
 export const evaluateHunterDiscovery = async (
   hunter: Hunter,
   discoveryService: DiscoveryService,
   evaluationService: EstimatedDealEvaluationService,
+  overridesByListingId: ListingDealEstimateOverrides = {},
 ): Promise<HunterDiscoveryIntelligenceResult> => {
   const discovery = await executeHunterDiscovery(
     hunter,
@@ -72,6 +78,7 @@ export const evaluateHunterDiscovery = async (
         const evaluation = await evaluationService.evaluate({
           hunter,
           listing,
+          overrides: overridesByListingId[listing.id],
         })
 
         return {

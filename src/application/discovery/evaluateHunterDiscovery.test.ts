@@ -15,6 +15,7 @@ import { EstimatedDealEvaluationService } from '../analysis/evaluateEstimatedDea
 import { DeterministicMarketplaceProvider } from '../../infrastructure/discovery/deterministicMarketplaceProvider'
 import { DiscoveryService } from './discoveryService'
 import { evaluateHunterDiscovery } from './evaluateHunterDiscovery'
+import { normalizeMarketplaceListing } from './normalizeMarketplaceListing'
 
 class FixedEstimateProvider implements DealEstimateProvider {
   readonly field: DealEstimateField
@@ -321,3 +322,126 @@ const run = async (): Promise<void> => {
 }
 
 void run()
+
+console.log(
+  '===== N3 — LISTING-SPECIFIC ECONOMICS OVERRIDE BOUNDARY =====',
+)
+
+{
+  const overrideResult = await evaluateHunterDiscovery(
+    {
+      ...hunter,
+      sources: ['facebook_marketplace'],
+    },
+    discoveryService,
+    new EstimatedDealEvaluationService(
+      new DealEstimationService([
+        new FixedEstimateProvider(
+          'estimatedResaleValue',
+          5000,
+        ),
+        new FixedEstimateProvider(
+          'expectedPurchasePrice',
+          2500,
+        ),
+        new FixedEstimateProvider(
+          'estimatedRepairCost',
+          400,
+        ),
+        new FixedEstimateProvider(
+          'estimatedTransportCost',
+          300,
+        ),
+        new FixedEstimateProvider(
+          'estimatedTaxesAndRegistration',
+          200,
+        ),
+        new FixedEstimateProvider(
+          'estimatedTransactionFees',
+          100,
+        ),
+        new FixedEstimateProvider(
+          'estimatedOtherCosts',
+          50,
+        ),
+      ]),
+    ),
+    {
+      [normalizeMarketplaceListing(rawListings[0]).id]: {
+        estimatedTransportCost: {
+          amount: 0,
+          confidence: 'high',
+          origin: 'provider',
+          basis: 'Explicit N3 transport override.',
+        },
+        estimatedOtherCosts: {
+          amount: 125,
+          confidence: 'high',
+          origin: 'provider',
+          basis: 'Explicit N3 other-cost override.',
+        },
+      },
+    },
+  )
+
+  assert(
+    overrideResult.evaluations.length === 1,
+    'Expected one evaluated listing for N3 override test.',
+  )
+
+  const overrideEvaluation =
+    overrideResult.evaluations[0]?.evaluation
+
+  assert(
+    overrideEvaluation?.status === 'evaluated',
+    'Listing-specific overrides must preserve complete evaluation.',
+  )
+
+  if (overrideEvaluation?.status !== 'evaluated') {
+    throw new Error(
+      'Expected evaluated N3 override result.',
+    )
+  }
+
+  assert(
+    overrideEvaluation.estimation.estimates
+      .estimatedTransportCost?.amount === 0,
+    'Explicit zero listing override was not preserved.',
+  )
+
+  assert(
+    overrideEvaluation.estimation.estimates
+      .estimatedTransportCost?.origin === 'user',
+    'Listing override must be forced to user origin.',
+  )
+
+  assert(
+    overrideEvaluation.estimation.estimates
+      .estimatedOtherCosts?.amount === 125,
+    'Listing-specific other-cost override did not reach estimation.',
+  )
+
+  assert(
+    overrideEvaluation.estimation.estimates
+      .estimatedOtherCosts?.origin === 'user',
+    'Listing-specific other-cost override must have user origin.',
+  )
+
+  assert(
+    overrideEvaluation.estimation.estimates
+      .estimatedRepairCost?.amount === 400,
+    'Non-overridden field must continue using provider intelligence.',
+  )
+
+  assert(
+    overrideEvaluation.estimation.estimates
+      .estimatedRepairCost?.origin !== 'user',
+    'Non-overridden field must not inherit user origin.',
+  )
+
+  console.log('PASS')
+}
+
+console.log(
+  '===== N3 LISTING-SPECIFIC OVERRIDE BOUNDARY PASSED =====',
+)
