@@ -193,3 +193,45 @@ console.log()
 console.log(
   '===== END-TO-END HUNTER DEAL EVALUATION PASSED =====',
 )
+
+const decisionEvaluation = evaluateListingForHunter({
+  hunter: createHunter(),
+  listing,
+  valuation: {
+    estimatedResaleValue: 7500,
+  },
+  expectedPurchasePrice: 4000,
+  estimatedRepairCost: 500,
+  estimatedTransportCost: 100,
+  estimatedTaxesAndRegistration: 250,
+  estimatedTransactionFees: 50,
+  estimatedOtherCosts: 100,
+})
+
+if (decisionEvaluation.decision.status !== 'negotiate') {
+  throw new Error(
+    `Expected negotiate decision, received ${decisionEvaluation.decision.status}`,
+  )
+}
+
+if (decisionEvaluation.decision.askingPrice !== 5000) {
+  throw new Error(
+    'Deal decision did not preserve seller asking price',
+  )
+}
+
+if (decisionEvaluation.decision.seekrBuyPrice !== 4000) {
+  throw new Error(
+    'Deal decision did not preserve SEEKR Buy Price',
+  )
+}
+
+if (decisionEvaluation.decision.priceGap !== -1000) {
+  throw new Error(
+    `Expected -$1000 price gap, received ${decisionEvaluation.decision.priceGap}`,
+  )
+}
+
+console.log(
+  '===== DEAL DECISION INTEGRATION SCENARIO PASSED =====',
+)

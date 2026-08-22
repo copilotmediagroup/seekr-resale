@@ -29,6 +29,28 @@ const formatPercent = (value: number | null): string => {
   return `${value.toFixed(1)}%`
 }
 
+const formatDecisionGap = (
+  priceGap: number | null,
+): string => {
+  if (priceGap === null) {
+    return 'Waiting for complete deal intelligence'
+  }
+
+  if (priceGap > 0) {
+    return `${formatMoney(
+      priceGap,
+    )} below SEEKR Buy Price`
+  }
+
+  if (priceGap < 0) {
+    return `${formatMoney(
+      Math.abs(priceGap),
+    )} above SEEKR Buy Price`
+  }
+
+  return 'Seller is exactly at SEEKR Buy Price'
+}
+
 const formatSource = (source: string): string =>
   source
     .split('_')
@@ -149,6 +171,10 @@ export function HunterOpportunityResults({
             const qualification =
               evaluation.evaluation.qualification
             const economics = analysis.economics
+            const decision =
+              evaluation.status === 'evaluated'
+                ? evaluation.evaluation.decision
+                : null
             const progressiveResaleValue =
               evaluation.estimation.estimates.estimatedResaleValue
             const missing = evaluation.estimation.missing
@@ -193,6 +219,36 @@ export function HunterOpportunityResults({
                     <strong>
                       {formatMoney(listing.askingPrice)}
                     </strong>
+                  </div>
+                </div>
+
+                <div
+                  className={`opportunityDecisionPanel opportunityDecisionPanel-${
+                    decision?.status ?? 'pending'
+                  }`}
+                >
+                  <div className="opportunityDecisionPrimary">
+                    <span>SEEKR DECISION</span>
+                    <strong>
+                      {(decision?.status ?? 'pending').toUpperCase()}
+                    </strong>
+                  </div>
+
+                  <div className="opportunityDecisionPrice">
+                    <span>SEEKR BUY PRICE</span>
+                    <strong>
+                      {formatMoney(
+                        decision?.seekrBuyPrice ??
+                          economics?.expectedPurchasePrice ??
+                          null,
+                      )}
+                    </strong>
+                  </div>
+
+                  <div className="opportunityDecisionGap">
+                    {formatDecisionGap(
+                      decision?.priceGap ?? null,
+                    )}
                   </div>
                 </div>
 

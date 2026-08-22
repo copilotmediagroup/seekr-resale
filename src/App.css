@@ -2469,3 +2469,103 @@
     flex-direction: column;
   }
 }
+
+/* N19E — SEEKR deal decision */
+.opportunityDecisionPanel {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1fr)
+    minmax(0, 1fr);
+  gap: 10px 18px;
+  align-items: center;
+  margin: 16px 0;
+  padding: 16px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.opportunityDecisionPrimary,
+.opportunityDecisionPrice {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.opportunityDecisionPrimary span,
+.opportunityDecisionPrice span {
+  font-size: 0.67rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  opacity: 0.58;
+}
+
+.opportunityDecisionPrimary strong {
+  font-size: 1.15rem;
+  letter-spacing: 0.035em;
+}
+
+.opportunityDecisionPrice {
+  text-align: right;
+}
+
+.opportunityDecisionPrice strong {
+  font-size: 1.25rem;
+}
+
+.opportunityDecisionGap {
+  grid-column: 1 / -1;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  font-size: 0.82rem;
+  font-weight: 600;
+  opacity: 0.78;
+}
+
+.opportunityDecisionPanel-buy {
+  border-color: rgba(58, 211, 137, 0.26);
+  background:
+    linear-gradient(
+      135deg,
+      rgba(58, 211, 137, 0.09),
+      rgba(58, 211, 137, 0.025)
+    );
+}
+
+.opportunityDecisionPanel-buy
+.opportunityDecisionPrimary strong {
+  color: #5ce0a0;
+}
+
+.opportunityDecisionPanel-negotiate {
+  border-color: rgba(255, 190, 80, 0.27);
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 190, 80, 0.09),
+      rgba(255, 190, 80, 0.025)
+    );
+}
+
+.opportunityDecisionPanel-negotiate
+.opportunityDecisionPrimary strong {
+  color: #ffc56f;
+}
+
+.opportunityDecisionPanel-pending {
+  opacity: 0.82;
+}
+
+@media (max-width: 720px) {
+  .opportunityDecisionPanel {
+    grid-template-columns: 1fr;
+  }
+
+  .opportunityDecisionPrice {
+    text-align: left;
+  }
+
+  .opportunityDecisionGap {
+    grid-column: 1;
+  }
+}

@@ -8,6 +8,10 @@ import {
   qualifyDealForHunter,
   type HunterQualificationResult,
 } from './qualifyDealForHunter'
+import {
+  calculateDealDecision,
+  type DealDecision,
+} from './DealDecision'
 
 export interface EvaluateListingForHunterInput
   extends AnalyzeListingDealInput {
@@ -19,6 +23,7 @@ export interface HunterDealEvaluation {
   listingId: string
   analysis: DealAnalysis
   qualification: HunterQualificationResult
+  decision: DealDecision
 }
 
 export const evaluateListingForHunter = ({
@@ -32,10 +37,16 @@ export const evaluateListingForHunter = ({
     analysis,
   )
 
+  const decision = calculateDealDecision({
+    askingPrice: analysisInput.listing.askingPrice,
+    seekrBuyPrice: analysisInput.expectedPurchasePrice,
+  })
+
   return {
     hunterId: hunter.id,
     listingId: analysis.listingId,
     analysis,
     qualification,
+    decision,
   }
 }
